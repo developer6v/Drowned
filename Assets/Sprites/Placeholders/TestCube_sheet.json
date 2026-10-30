@@ -1,0 +1,16 @@
+{
+  "name": "TestCube",
+  "frameSize": [
+    256,
+    256
+  ],
+  "directions": 4,
+  "directionOrder": [
+    "S",
+    "W",
+    "N",
+    "E"
+  ],
+  "frames": 1,
+  "layout": "linhas = direcoes, colunas = frames"
+}
