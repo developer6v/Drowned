@@ -46,7 +46,7 @@ namespace Drowned.Core
 
             // Regras: campo do Inspector > Assets/Data/Resources/GameRules.asset (gerado da planilha, SCRUM-118)
             // > conteúdo em memória com os números propostos (DemoContent).
-            GameRules rules = _rules != null ? _rules : Resources.Load<GameRules>("GameRules");
+            GameRules rules = _rules != null ? _rules : UnityEngine.Resources.Load<GameRules>("GameRules");
             bool demoArt = rules == null;
             if (rules == null)
             {
