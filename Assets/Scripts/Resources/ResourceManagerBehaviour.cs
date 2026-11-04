@@ -5,16 +5,14 @@ using UnityEngine.Events;
 namespace Drowned.Resources
 {
     /// <summary>
-    /// Ponte entre a cena e o <see cref="ResourceManager"/> (SCRUM-131).
-    /// Coloque um único objeto "ResourceManager" na cena. Precisa de um <see cref="GameClockBehaviour"/> na cena.
+    /// Ponte entre a cena e o <see cref="ResourceManager"/> (SCRUM-131). O sistema em si é criado pelo
+    /// <see cref="GameManager"/>; este componente só expõe os eventos para a HUD ligar pelo inspetor.
+    /// Coloque um único objeto "ResourceManager" na cena, depois do GameManager.
     /// </summary>
-    [DefaultExecutionOrder(-90)]
+    [DefaultExecutionOrder(-80)]
     public sealed class ResourceManagerBehaviour : MonoBehaviour
     {
         public static ResourceManagerBehaviour Instance { get; private set; }
-
-        [Header("Estoque inicial (SCRUM-120) — valor final vem da aba Inicial da planilha")]
-        [SerializeField] private ResourceBundle _initialStock;
 
         [Header("Eventos para a HUD e alertas")]
         public UnityEvent<ResourceBundle> onStockChanged;
@@ -23,8 +21,6 @@ namespace Drowned.Resources
         public UnityEvent onRatesChanged;
 
         public ResourceManager Resources { get; private set; }
-
-        private GameClock _clock;
 
         private void Awake()
         {
@@ -36,36 +32,35 @@ namespace Drowned.Resources
             }
             Instance = this;
 
-            var clockBehaviour = GameClockBehaviour.Instance;
-            if (clockBehaviour == null)
+            var game = GameManagerBehaviour.Instance != null ? GameManagerBehaviour.Instance.Game : null;
+            if (game == null)
             {
-                Debug.LogError("ResourceManagerBehaviour: não há GameClockBehaviour na cena.", this);
+                Debug.LogError("ResourceManagerBehaviour: não há GameManagerBehaviour inicializado na cena.", this);
                 enabled = false;
                 return;
             }
-            _clock = clockBehaviour.Clock;
 
-            Resources = new ResourceManager(_initialStock, _clock.TicksPerDay);
-            Resources.OnStockChanged += stock => onStockChanged?.Invoke(stock);
-            Resources.OnDepleted += type => onDepleted?.Invoke(type);
-            Resources.OnRestored += type => onRestored?.Invoke(type);
-            Resources.OnRatesChanged += () => onRatesChanged?.Invoke();
+            Resources = game.Resources;
+            Resources.OnStockChanged += HandleStockChanged;
+            Resources.OnDepleted += HandleDepleted;
+            Resources.OnRestored += HandleRestored;
+            Resources.OnRatesChanged += HandleRatesChanged;
         }
 
-        private void OnEnable()
-        {
-            if (_clock != null) _clock.OnTick += HandleTick;
-        }
-
-        private void OnDisable()
-        {
-            if (_clock != null) _clock.OnTick -= HandleTick;
-        }
-
-        private void HandleTick(int tickOfDay) => Resources.Tick();
+        private void HandleStockChanged(ResourceBundle stock) => onStockChanged?.Invoke(stock);
+        private void HandleDepleted(ResourceType type) => onDepleted?.Invoke(type);
+        private void HandleRestored(ResourceType type) => onRestored?.Invoke(type);
+        private void HandleRatesChanged() => onRatesChanged?.Invoke();
 
         private void OnDestroy()
         {
+            if (Resources != null)
+            {
+                Resources.OnStockChanged -= HandleStockChanged;
+                Resources.OnDepleted -= HandleDepleted;
+                Resources.OnRestored -= HandleRestored;
+                Resources.OnRatesChanged -= HandleRatesChanged;
+            }
             if (Instance == this) Instance = null;
         }
     }
