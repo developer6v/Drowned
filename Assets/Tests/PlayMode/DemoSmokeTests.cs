@@ -49,7 +49,7 @@ namespace Drowned.Tests
             Assert.IsNotNull(gm.Game, "GameManager não inicializou");
             var game = gm.Game;
 
-            bool fromAsset = Resources.Load<GameRules>("GameRules") != null;
+            bool fromAsset = UnityEngine.Resources.Load<GameRules>("GameRules") != null;
             Debug.Log(fromAsset
                 ? "[Smoke] GameRules.asset da planilha carregado"
                 : "[Smoke] GameRules.asset não existe; a demo usa DemoContent (rode Drowned → Gerar dados da planilha)");
