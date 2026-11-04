@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73de2a246ce81f840bcc5889a789ff16, type: 3}
+  m_Name: Monument
+  m_EditorClassIdentifier: Drowned.Runtime::Drowned.Monument.MonumentData
+  _ruinSprite: {fileID: 1545675834410550592, guid: 6996f309fefad204cb632a461a9b0883, type: 3}
+  _stages:
+  - _displayName: Fundacao
+    _requiredResources:
+      _energy: 300
+      _oxygen: 200
+      _food: 150
+    _contributionPerDay:
+      _energy: 30
+      _oxygen: 20
+      _food: 15
+    _minPopulation: 10
+    _requiredSpecialistIds: []
+    _requiredTechnologyIds: []
+    _sprite: {fileID: 2333868344764082983, guid: 7f2e7544357816140868b02ffce15298, type: 3}
+  - _displayName: Estrutura
+    _requiredResources:
+      _energy: 600
+      _oxygen: 400
+      _food: 300
+    _contributionPerDay:
+      _energy: 50
+      _oxygen: 35
+      _food: 25
+    _minPopulation: 15
+    _requiredSpecialistIds:
+    - engineer
+    _requiredTechnologyIds:
+    - modular
+    _sprite: {fileID: 7240746573576801351, guid: 3d3bde025ae0b3f40a68336dd61a0419, type: 3}
+  - _displayName: Sistemas
+    _requiredResources:
+      _energy: 1000
+      _oxygen: 700
+      _food: 500
+    _contributionPerDay:
+      _energy: 80
+      _oxygen: 60
+      _food: 40
+    _minPopulation: 25
+    _requiredSpecialistIds:
+    - engineer
+    - scientist
+    _requiredTechnologyIds:
+    - geothermal
+    - monumental
+    _sprite: {fileID: -9153813615382741745, guid: 6923ed8e4bab7f44d8e5c119e62e9ba1, type: 3}
+  - _displayName: Acabamento
+    _requiredResources:
+      _energy: 1500
+      _oxygen: 1000
+      _food: 800
+    _contributionPerDay:
+      _energy: 120
+      _oxygen: 80
+      _food: 60
+    _minPopulation: 30
+    _requiredSpecialistIds:
+    - engineer
+    - biologist
+    - scientist
+    - architect
+    _requiredTechnologyIds:
+    - computing
+    _sprite: {fileID: -3357054475248689580, guid: 85161795252a91f42b0608daf3917c7f, type: 3}

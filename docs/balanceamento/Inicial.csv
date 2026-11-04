@@ -1,0 +1,5 @@
+Chave;Parametro;Valor;Unidade;Justificativa
+initialPopulation;Populacao inicial;5;habitantes;Comunitaria pequena; confirmar moradia e consumo (CSV do grupo)
+initialEnergy;Estoque inicial de energia;100;unidades;Reserva inicial proposta; validar com taxas de producao/consumo
+initialOxygen;Estoque inicial de oxigenio;100;unidades;Reserva inicial proposta; validar com taxas de producao/consumo
+initialFood;Estoque inicial de alimento;80;unidades;Reserva inicial proposta; validar com taxas de producao/consumo

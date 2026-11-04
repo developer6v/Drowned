@@ -1,0 +1,7 @@
+Chave;Parametro;Valor;Unidade;Justificativa
+growthPerDay;Crescimento por dia com recursos e moradia;1;habitantes/dia;Proposta SCRUM-132
+starvationLossPerDay;Perda por dia com alimento zerado;1;habitantes/dia;Fome reduz devagar; colapso e por energia/oxigenio
+minimumPopulation;Populacao minima (nunca abaixo);1;habitantes;A cidade nunca fica vazia
+consumptionEnergy;Consumo de energia por habitante por dia;1;unidades/dia;Proposta SCRUM-133
+consumptionOxygen;Consumo de oxigenio por habitante por dia;1.5;unidades/dia;Oxigenio e o recurso mais sensivel
+consumptionFood;Consumo de alimento por habitante por dia;1;unidades/dia;Proposta SCRUM-133

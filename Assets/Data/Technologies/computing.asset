@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca145b97099c054aa54d11562c50c8d, type: 3}
+  m_Name: computing
+  m_EditorClassIdentifier: Drowned.Runtime::Drowned.Research.TechnologyData
+  _id: computing
+  _displayName: Computacao submersa
+  _description: Pesquisa 30% mais rapida e libera o nivel 2 do Laboratorio.
+  _cost: 150
+  _prerequisites:
+  - {fileID: 11400000, guid: d79766b5875ccfd499d471a3a625b1a7, type: 2}
+  - {fileID: 11400000, guid: 89d29f8398a7b3e4fbbc4b4be9a609b4, type: 2}
+  _effects:
+  - _type: 3
+    _structureId: 
+    _level: 1
+    _resource: 0
+    _value: 0.3
+  - _type: 1
+    _structureId: lab
+    _level: 2
+    _resource: 0
+    _value: 0
+  _icon: {fileID: 0}

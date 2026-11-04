@@ -1,0 +1,6 @@
+Chave;Parametro;Valor;Unidade;Justificativa
+populationWeight;Pontos por habitante;1;pontos;Proposta SCRUM-162
+structureLevelWeight;Pontos por nivel de estrutura construida;3;pontos;Uma estrutura N2 vale 6
+technologyWeight;Pontos por tecnologia pesquisada;10;pontos;Pesquisa pesa mais que construir
+pointsPerLevel;Pontos para subir um nivel de cidade;50;pontos;5 niveis em ~250 pontos
+maxLevel;Nivel maximo da cidade;5;nivel;GDD

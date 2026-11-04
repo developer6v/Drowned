@@ -1,0 +1,4 @@
+Chave;Parametro;Valor;Unidade;Justificativa
+secondsPerDay;Segundos reais por dia simulado (1x);60;s;Proposta SCRUM-119: um dia por minuto, partida de ~40 min a 1x
+ticksPerDay;Ticks de simulacao por dia;24;ticks;Um tick por "hora": recursos e populacao atualizam suave
+daysToCollapse;Dias consecutivos sem energia OU oxigenio ate a derrota;3;dias;Proposta SCRUM-121: tempo de reagir sem ser punitivo
