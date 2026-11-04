@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Drowned.Monument;
 using Drowned.Population;
 using Drowned.Research;
 using Drowned.Resources;
@@ -52,12 +53,26 @@ namespace Drowned.Core
         [Header("Tecnologias (SCRUM-146 / SCRUM-149)")]
         [SerializeField] private List<TechnologyData> _technologies = new List<TechnologyData>();
 
+        [Header("Monumento (SCRUM-160 / SCRUM-163)")]
+        [SerializeField] private MonumentData _monument;
+
+        [Header("Nível de desenvolvimento (SCRUM-162)")]
+        [SerializeField] private CityLevelConfig _cityLevel = new CityLevelConfig();
+
         public int DaysToCollapse => _daysToCollapse;
         public ResourceBundle InitialStock => _initialStock;
         public IReadOnlyList<InitialStructure> InitialStructures => _initialStructures;
         public PopulationConfig Population => _population;
         public IReadOnlyList<SpecialistData> Specialists => _specialists;
         public IReadOnlyList<TechnologyData> Technologies => _technologies;
+        public MonumentData Monument => _monument;
+        public CityLevelConfig CityLevel => _cityLevel;
+
+        /// <summary>Define o Monumento em memória. Para testes e para o gerador da planilha.</summary>
+        public void SetMonument(MonumentData monument) => _monument = monument;
+
+        /// <summary>Define os pesos do nível da cidade em memória. Para testes e para o gerador da planilha.</summary>
+        public void SetCityLevel(CityLevelConfig config) => _cityLevel = config ?? new CityLevelConfig();
 
         /// <summary>Define os especialistas em memória. Para testes e para o gerador da planilha.</summary>
         public void SetSpecialists(IEnumerable<SpecialistData> specialists)
