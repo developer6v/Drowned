@@ -56,6 +56,8 @@ blender -b --python tools/blender/render_batch.py -- --skip-existing
 - Todas as estruturas usam o mesmo `orthoScale`, então uma Moradia 1×1 e um Laboratório 2×2
   saem na proporção certa um em relação ao outro. `groundAnchor: 0.25` põe o chão do modelo
   a 25 % da borda de baixo do frame em todos os sprites; o `.json` grava isso como `pivot`.
+  O `pixelsPerUnit` do `.json` é calculado (`size / orthoScale × √2`) para que 1 célula do grid
+  tenha exatamente 1 unidade de largura no Unity (Grid isométrico com cellSize 1 × 0,5).
 - Saída: `Assets/Sprites/<category>/<name>/<name>_sheet.png` + `.json`. Frames individuais
   ficam em `tools/blender/out/` (ignorado pelo Git).
 - Uma falha num item não derruba o lote; o resumo no fim lista ok/pulados/falhas e o processo

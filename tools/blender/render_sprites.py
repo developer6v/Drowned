@@ -250,7 +250,7 @@ def render_all(scene, pivot, out_dir, name, directions, frames):
     return files
 
 
-def build_sheet(files, out_dir, name, size, directions, pivot=(0.5, 0.5)):
+def build_sheet(files, out_dir, name, size, directions, pivot=(0.5, 0.5), pixels_per_unit=128):
     rows = len(files)
     cols = len(files[0])
     sheet = np.zeros((rows * size, cols * size, 4), dtype=np.float32)
@@ -278,7 +278,7 @@ def build_sheet(files, out_dir, name, size, directions, pivot=(0.5, 0.5)):
         "frames": cols,
         "layout": "linhas = direcoes, colunas = frames",
         "pivot": [pivot[0], pivot[1]],
-        "pixelsPerUnit": 128,
+        "pixelsPerUnit": pixels_per_unit,
     }
     with open(os.path.join(out_dir, f"{name}_sheet.json"), "w", encoding="utf-8") as fh:
         json.dump(meta, fh, indent=2, ensure_ascii=False)
@@ -319,7 +319,10 @@ def render_objects(scene, objects, out_dir, name, size=256, directions=4, frames
         cam.location = cam.location + up * shift
         sprite_pivot = (0.5, ground_anchor)
     files = render_all(scene, pivot, out_dir, name, directions, list(frames))
-    sheet = build_sheet(files, out_dir, name, size, directions, pivot=sprite_pivot)
+    # PPU tal que 1 celula do grid (1 unidade Blender) tenha 1 unidade de largura no Unity:
+    # a largura do losango de uma celula na projecao a 45 graus e sqrt(2) unidades.
+    ppu = int(round(size / ortho * math.sqrt(2.0)))
+    sheet = build_sheet(files, out_dir, name, size, directions, pivot=sprite_pivot, pixels_per_unit=ppu)
     # Limpa a camera para o proximo item do lote
     bpy.data.objects.remove(cam, do_unlink=True)
     return sheet
