@@ -12,6 +12,7 @@ namespace Drowned.Tests
     /// <summary>
     /// Smoke test da demo jogável (SCRUM-188): monta a cena por código com <see cref="DemoBootstrap"/>,
     /// deixa a partida rodar alguns dias simulados, constrói uma estrutura e confere que nada quebrou.
+    /// Também abre as cenas salvas (MainMenu.unity e Game.unity) e confere o fluxo menu → jogo.
     /// É o teste que diz "a demo abre e roda" sem ninguém clicar. Em batch:
     ///
     /// <code>
@@ -22,45 +23,63 @@ namespace Drowned.Tests
     {
         private const int DaysToSimulate = 5;
 
-        [UnitySetUp]
-        public IEnumerator SetUp()
-        {
-            // Cena vazia só para o teste (não precisa estar nas Build Settings)
-            var scene = SceneManager.CreateScene("SmokeScene");
-            SceneManager.SetActiveScene(scene);
-            yield return null;
-            new GameObject("DemoBootstrap").AddComponent<DemoBootstrap>();
-            // Dois frames: Awake do DemoBootstrap monta tudo; os Behaviours ligam no Start.
-            yield return null;
-            yield return null;
-        }
-
         [UnityTearDown]
         public IEnumerator TearDown()
         {
             foreach (var go in Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None))
                 if (go.transform.parent == null) Object.Destroy(go);
             yield return null;
-            var scene = SceneManager.GetSceneByName("SmokeScene");
-            if (scene.IsValid() && SceneManager.sceneCount > 1) yield return SceneManager.UnloadSceneAsync(scene);
         }
 
-        /// <summary>A cena salva em Assets/Scenes/Demo.unity abre e monta o jogo sozinha.</summary>
-        [UnityTest]
-        public IEnumerator Cena_Demo_unity_abre_e_monta_o_jogo()
+        private static IEnumerator NewEmptyScene(string name)
         {
+            var scene = SceneManager.CreateScene(name);
+            SceneManager.SetActiveScene(scene);
+            yield return null;
+        }
+
 #if UNITY_EDITOR
-            const string path = "Assets/Scenes/Demo.unity";
-            Assert.IsTrue(System.IO.File.Exists(path), $"{path} não existe; rode Drowned → Criar cena Demo");
+        private static IEnumerator LoadSceneByPath(string path)
+        {
+            Assert.IsTrue(System.IO.File.Exists(path), path + " não existe; rode Drowned → Criar cenas");
             yield return UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(
                 path, new LoadSceneParameters(LoadSceneMode.Single));
             yield return null;
             yield return null;
+        }
+#endif
+
+        /// <summary>A cena salva Game.unity abre e monta o jogo sozinha.</summary>
+        [UnityTest]
+        public IEnumerator Cena_Game_abre_e_monta_o_jogo()
+        {
+#if UNITY_EDITOR
+            yield return LoadSceneByPath("Assets/Scenes/Game.unity");
             var gm = GameManagerBehaviour.Instance;
-            Assert.IsNotNull(gm, "Demo.unity não criou o GameManager");
+            Assert.IsNotNull(gm, "Game.unity não criou o GameManager");
             Assert.IsNotNull(gm.Game);
-            Assert.Greater(gm.Game.Structures.Instances.Count(), 0, "Demo.unity sem estruturas iniciais");
-            Assert.IsNotNull(GameObject.Find("HUD"), "Demo.unity sem HUD");
+            Assert.Greater(gm.Game.Structures.Instances.Count(), 0, "Game.unity sem estruturas iniciais");
+            Assert.IsNotNull(GameObject.Find("HUD"), "Game.unity sem HUD");
+#else
+            yield break;
+#endif
+        }
+
+        /// <summary>MainMenu.unity abre com o menu e "Jogar" leva ao jogo (fluxo completo, sem Build Settings no editor).</summary>
+        [UnityTest]
+        public IEnumerator Cena_MainMenu_abre_e_Jogar_carrega_o_jogo()
+        {
+#if UNITY_EDITOR
+            yield return LoadSceneByPath("Assets/Scenes/MainMenu.unity");
+            Assert.IsNotNull(GameObject.Find("MainMenuCanvas"), "MainMenu.unity sem o canvas do menu");
+            Assert.IsNull(GameManagerBehaviour.Instance, "o menu não deveria ter GameManager");
+
+            Drowned.UI.SceneFlow.LoadGame(); // mesmo caminho do botão Jogar
+            yield return null;
+            yield return null;
+            yield return null;
+            Assert.AreEqual("Game", SceneManager.GetActiveScene().name, "Jogar não trocou para a cena Game");
+            Assert.IsNotNull(GameManagerBehaviour.Instance, "cena Game carregada pelo menu não montou o jogo");
 #else
             yield break;
 #endif
@@ -69,6 +88,12 @@ namespace Drowned.Tests
         [UnityTest]
         public IEnumerator Demo_abre_roda_cinco_dias_e_constroi()
         {
+            yield return NewEmptyScene("SmokeScene");
+            new GameObject("DemoBootstrap").AddComponent<DemoBootstrap>();
+            // Dois frames: Awake do DemoBootstrap monta tudo; os Behaviours ligam no Start.
+            yield return null;
+            yield return null;
+
             var gm = GameManagerBehaviour.Instance;
             Assert.IsNotNull(gm, "GameManagerBehaviour não foi criado pelo DemoBootstrap");
             Assert.IsNotNull(gm.Game, "GameManager não inicializou");

@@ -55,17 +55,18 @@ Os modelos são feitos no Blender e renderizados em 4 direções com câmera ort
 blender -b --python tools/blender/render_sprites.py -- --test-cube
 ```
 
-## Rodando a demo jogável (sem montar cena)
+## Rodando o jogo
 
-Enquanto a cena definitiva e os assets da planilha não existem, dá para jogar com tudo montado por código:
+Duas cenas em `Assets/Scenes`, cada uma com um único objeto que monta o resto por código ao dar Play:
 
-1. Crie uma cena vazia (ou use a `SampleScene`), apague tudo menos a câmera.
-2. Crie um objeto vazio chamado `Bootstrap` e adicione o componente **DemoBootstrap** (`Drowned.Core`).
-3. Play. O bootstrap cria o grid isométrico com tiles gerados, o relógio, o GameManager com os números propostos no Jira (`DemoContent`), as 4 estruturas iniciais, o Monumento em ruína, o modo construção e a HUD inteira.
+- `MainMenu.unity`: menu principal (Jogar, Continuar, Opções, Sair).
+- `Game.unity`: a partida. O objeto `DemoBootstrap` cria grid, relógio, GameManager com o `GameRules.asset` da planilha, estruturas iniciais, Monumento, modo construção, áudio e HUD.
+
+Abra qualquer uma e dê Play. No editor, "Jogar" carrega `Game.unity` pelo caminho mesmo sem Build Settings. Para a build Windows, adicione as duas nas Build Settings (MainMenu primeiro). Se precisar recriar as cenas: **Drowned → Criar cenas (MainMenu + Game)**.
 
 Controles: WASD/setas ou arrastar com o botão direito movem a câmera, roda do mouse dá zoom, Espaço pausa, 1/2/3 mudam a velocidade, Esc abre o menu de pausa, F5 salva. Clique em uma estrutura da barra inferior e depois no mapa para construir; clique em uma estrutura construída para melhorar ou remover.
 
-Quando os assets reais existirem (`Assets/Data/GameRules.asset` gerado da planilha), arraste o `GameRules` no campo do `DemoBootstrap`, ou monte a cena com os Behaviours à mão e remova o bootstrap. A ordem na cena é: `GameClockBehaviour` → `GameManagerBehaviour` (com Rules e Grid) → `ResourceManagerBehaviour`, `PopulationManagerBehaviour`, `StructureManagerBehaviour`, `MonumentBehaviour` → `BuildModeController`, `StructureSelector`, `AudioManager`, `HudBuilder`.
+Se `Assets/Data/Resources/GameRules.asset` não existir, o `DemoBootstrap` cai nos números em memória (`DemoContent`) e avisa no Console; rode **Drowned → Gerar dados da planilha** para gerá-lo a partir de `docs/balanceamento`.
 
 ## Fluxo de trabalho
 
