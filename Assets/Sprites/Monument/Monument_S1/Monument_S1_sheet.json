@@ -1,0 +1,21 @@
+{
+  "name": "Monument_S1",
+  "frameSize": [
+    512,
+    512
+  ],
+  "directions": 4,
+  "directionOrder": [
+    "S",
+    "W",
+    "N",
+    "E"
+  ],
+  "frames": 1,
+  "layout": "linhas = direcoes, colunas = frames",
+  "pivot": [
+    0.5,
+    0.25
+  ],
+  "pixelsPerUnit": 128
+}

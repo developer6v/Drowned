@@ -250,7 +250,7 @@ def render_all(scene, pivot, out_dir, name, directions, frames):
     return files
 
 
-def build_sheet(files, out_dir, name, size, directions):
+def build_sheet(files, out_dir, name, size, directions, pivot=(0.5, 0.5)):
     rows = len(files)
     cols = len(files[0])
     sheet = np.zeros((rows * size, cols * size, 4), dtype=np.float32)
@@ -277,10 +277,52 @@ def build_sheet(files, out_dir, name, size, directions):
         "directionOrder": DIRECTION_NAMES[directions],
         "frames": cols,
         "layout": "linhas = direcoes, colunas = frames",
+        "pivot": [pivot[0], pivot[1]],
+        "pixelsPerUnit": 128,
     }
     with open(os.path.join(out_dir, f"{name}_sheet.json"), "w", encoding="utf-8") as fh:
         json.dump(meta, fh, indent=2, ensure_ascii=False)
     return sheet_path
+
+
+def auto_ortho_scale(objects, elevation_deg):
+    r, h = bounds_radius(objects)
+    # Losango isometrico: largura visivel ~ 2r*sqrt(2); altura ~ h*cos(elev) + 2r*sin(elev)
+    width = 2.0 * r * math.sqrt(2.0)
+    height = h * math.cos(math.radians(elevation_deg)) + 2.0 * r * math.sin(math.radians(elevation_deg))
+    return max(width, height) * 1.15
+
+
+def render_objects(scene, objects, out_dir, name, size=256, directions=4, frames=(1,),
+                   ortho_scale=None, elevation=ISO_ELEVATION_DEG, azimuth=ISO_AZIMUTH_DEG,
+                   ground_anchor=None):
+    """Renderiza objetos ja presentes na cena (com camera/luzes ja montadas por quem chamou)
+    nas N direcoes e monta o spritesheet. Devolve o caminho do sheet.
+
+    ground_anchor: fracao da altura do frame (0 = borda de baixo) onde a origem do modelo
+    (o chao, Z = 0) deve cair. None centraliza o modelo verticalmente. Para estruturas do
+    grid use 0.25 em todas, assim o pivo do sprite no Unity e sempre o mesmo ponto do chao.
+    """
+    pivot = group_under_pivot(objects)
+    ortho = ortho_scale if ortho_scale is not None else auto_ortho_scale(objects, elevation)
+    cam = setup_camera(scene, elevation, azimuth, ortho)
+    if ground_anchor is None:
+        _, h = bounds_radius(objects)
+        cam.location = (cam.location.x, cam.location.y, cam.location.z + h * 0.5)
+        sprite_pivot = (0.5, 0.5)
+    else:
+        # Camera ortografica: subir a camera ao longo do seu eixo "cima" em d unidades
+        # faz a origem projetada descer d / ortho da altura do frame.
+        # matrix_world so atualiza no proximo depsgraph; usa a rotacao direto.
+        up = cam.rotation_euler.to_matrix() @ __import__("mathutils").Vector((0.0, 1.0, 0.0))
+        shift = (0.5 - ground_anchor) * ortho
+        cam.location = cam.location + up * shift
+        sprite_pivot = (0.5, ground_anchor)
+    files = render_all(scene, pivot, out_dir, name, directions, list(frames))
+    sheet = build_sheet(files, out_dir, name, size, directions, pivot=sprite_pivot)
+    # Limpa a camera para o proximo item do lote
+    bpy.data.objects.remove(cam, do_unlink=True)
+    return sheet
 
 
 def main():
@@ -298,25 +340,11 @@ def main():
     setup_lights(scene)
 
     objects = make_test_cube(scene) if args.test_cube else import_model(os.path.abspath(args.model))
-    pivot = group_under_pivot(objects)
-
-    if args.ortho_scale is None:
-        r, h = bounds_radius(objects)
-        # Losango isometrico: largura visivel ~ 2r*sqrt(2); altura ~ h*cos(elev) + 2r*sin(elev)
-        width = 2.0 * r * math.sqrt(2.0)
-        height = h * math.cos(math.radians(args.elevation)) + 2.0 * r * math.sin(math.radians(args.elevation))
-        ortho = max(width, height) * 1.15
-    else:
-        ortho = args.ortho_scale
-    cam = setup_camera(scene, args.elevation, args.azimuth, ortho)
-    # Centraliza verticalmente: mira no meio da altura do modelo
-    _, h = bounds_radius(objects)
-    cam.location = (cam.location.x, cam.location.y, cam.location.z + h * 0.5)
-
     frames = parse_frames(args.frames)
-    files = render_all(scene, pivot, out_dir, name, args.directions, frames)
-    sheet = build_sheet(files, out_dir, name, args.size, args.directions)
-    print(f"[render_sprites] OK: {len(files) * len(files[0])} frames, sheet em {sheet}")
+    sheet = render_objects(scene, objects, out_dir, name, size=args.size, directions=args.directions,
+                           frames=frames, ortho_scale=args.ortho_scale,
+                           elevation=args.elevation, azimuth=args.azimuth)
+    print(f"[render_sprites] OK: {len(frames) * args.directions} frames, sheet em {sheet}")
 
 
 if __name__ == "__main__":
