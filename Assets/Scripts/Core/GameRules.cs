@@ -40,6 +40,10 @@ namespace Drowned.Core
         [Tooltip("Dias consecutivos com energia OU oxigênio zerados até a derrota.")]
         [SerializeField, Min(1)] private int _daysToCollapse = 3;
 
+        [Header("Catálogo de estruturas (barra de construção e save)")]
+        [Tooltip("Todas as estruturas construíveis, na ordem da barra inferior.")]
+        [SerializeField] private List<StructureData> _structures = new List<StructureData>();
+
         [Header("Começo de partida (SCRUM-120, aba Inicial)")]
         [SerializeField] private ResourceBundle _initialStock = new ResourceBundle(100f, 100f, 80f);
         [SerializeField] private List<InitialStructure> _initialStructures = new List<InitialStructure>();
@@ -60,7 +64,23 @@ namespace Drowned.Core
         [SerializeField] private CityLevelConfig _cityLevel = new CityLevelConfig();
 
         public int DaysToCollapse => _daysToCollapse;
+        public IReadOnlyList<StructureData> Structures => _structures;
         public ResourceBundle InitialStock => _initialStock;
+
+        /// <summary>Procura uma estrutura pelo id no catálogo e nas iniciais. Null se não existe.</summary>
+        public StructureData FindStructure(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return null;
+            foreach (var s in _structures) if (s != null && s.Id == id) return s;
+            foreach (var i in _initialStructures) if (i.data != null && i.data.Id == id) return i.data;
+            return null;
+        }
+
+        /// <summary>Define o catálogo em memória. Para testes e para o gerador da planilha.</summary>
+        public void SetStructureCatalog(IEnumerable<StructureData> structures)
+        {
+            _structures = structures != null ? new List<StructureData>(structures) : new List<StructureData>();
+        }
         public IReadOnlyList<InitialStructure> InitialStructures => _initialStructures;
         public PopulationConfig Population => _population;
         public IReadOnlyList<SpecialistData> Specialists => _specialists;

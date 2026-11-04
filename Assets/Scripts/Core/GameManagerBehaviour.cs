@@ -1,3 +1,4 @@
+using Drowned.Save;
 using Drowned.World;
 using UnityEngine;
 using UnityEngine.Events;
@@ -55,8 +56,23 @@ namespace Drowned.Core
 
         private void Start()
         {
+            if (Game == null) return;
             // Depois do Awake de todos: os Behaviours já assinaram OnStructureBuilt e vão criar os sprites.
-            if (Game != null) Game.PlaceInitialStructures();
+            var pending = SaveSystem.PendingLoad;
+            if (pending != null)
+            {
+                SaveSystem.PendingLoad = null;
+                SaveSystem.Apply(Game, pending);
+            }
+            else Game.PlaceInitialStructures();
+        }
+
+        /// <summary>Grava a partida atual no slot. Falso se a partida já acabou ou não há jogo.</summary>
+        public bool SaveGame(int slot = 1)
+        {
+            if (Game == null || Game.IsOver) return false;
+            SaveSystem.Save(Game, slot);
+            return true;
         }
 
         private void OnDestroy()
