@@ -63,7 +63,10 @@ namespace Drowned.World
         {
             var go = new GameObject($"{instance.Data.Id}#{instance.Id}");
             go.transform.SetParent(_structuresParent != null ? _structuresParent : transform, worldPositionStays: false);
-            go.transform.position = _map.GridToWorldCenter(instance.X, instance.Y);
+            // Centro da pegada (para 2x2 fica entre as quatro células)
+            Vector3 a = _map.GridToWorldCenter(instance.X, instance.Y);
+            Vector3 b = _map.GridToWorldCenter(instance.X + instance.Data.FootprintWidth - 1, instance.Y + instance.Data.FootprintHeight - 1);
+            go.transform.position = (a + b) * 0.5f;
 
             var renderer = go.AddComponent<SpriteRenderer>();
             renderer.sortingLayerName = _sortingLayer;
