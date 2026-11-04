@@ -54,6 +54,18 @@ Os modelos são feitos no Blender e renderizados em 4 direções com câmera ort
 blender -b --python tools/blender/render_sprites.py -- --test-cube
 ```
 
+## Rodando a demo jogável (sem montar cena)
+
+Enquanto a cena definitiva e os assets da planilha não existem, dá para jogar com tudo montado por código:
+
+1. Crie uma cena vazia (ou use a `SampleScene`), apague tudo menos a câmera.
+2. Crie um objeto vazio chamado `Bootstrap` e adicione o componente **DemoBootstrap** (`Drowned.Core`).
+3. Play. O bootstrap cria o grid isométrico com tiles gerados, o relógio, o GameManager com os números propostos no Jira (`DemoContent`), as 4 estruturas iniciais, o Monumento em ruína, o modo construção e a HUD inteira.
+
+Controles: WASD/setas ou arrastar com o botão direito movem a câmera, roda do mouse dá zoom, Espaço pausa, 1/2/3 mudam a velocidade, Esc abre o menu de pausa, F5 salva. Clique em uma estrutura da barra inferior e depois no mapa para construir; clique em uma estrutura construída para melhorar ou remover.
+
+Quando os assets reais existirem (`Assets/Data/GameRules.asset` gerado da planilha), arraste o `GameRules` no campo do `DemoBootstrap`, ou monte a cena com os Behaviours à mão e remova o bootstrap. A ordem na cena é: `GameClockBehaviour` → `GameManagerBehaviour` (com Rules e Grid) → `ResourceManagerBehaviour`, `PopulationManagerBehaviour`, `StructureManagerBehaviour`, `MonumentBehaviour` → `BuildModeController`, `StructureSelector`, `AudioManager`, `HudBuilder`.
+
 ## Fluxo de trabalho
 
 1. Toda tarefa vem do Jira (chave `SCRUM-nnn`). Leia a descrição de aceite antes de começar.
