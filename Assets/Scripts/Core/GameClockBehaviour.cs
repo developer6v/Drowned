@@ -31,6 +31,21 @@ namespace Drowned.Core
 
         public GameClock Clock { get; private set; }
 
+        /// <summary>
+        /// Define a escala de tempo por código antes do <c>Awake</c> (objeto ainda inativo), para quem monta
+        /// a cena por script com os valores do <c>GameRules</c> da planilha (SCRUM-118). Depois do Awake não tem efeito.
+        /// </summary>
+        public void Configure(float secondsPerDay, int ticksPerDay)
+        {
+            if (Clock != null)
+            {
+                Debug.LogWarning("GameClockBehaviour.Configure chamado depois do Awake; ignorado.", this);
+                return;
+            }
+            _secondsPerDay = Mathf.Max(1f, secondsPerDay);
+            _ticksPerDay = Mathf.Max(1, ticksPerDay);
+        }
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
