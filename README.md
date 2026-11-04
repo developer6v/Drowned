@@ -40,6 +40,7 @@ Sem isso cenas e prefabs viram binário e o Git não consegue fazer diff nem mer
 Assets/
   Scripts/        C# por sistema: Core, World, Resources, Population, Research, Monument, UI, Save
   Tests/EditMode/ Testes do Unity Test Framework (lógica pura, sem cena)
+  Tests/PlayMode/ Smoke test da demo (entra em Play, simula dias, constrói)
   Sprites/        Spritesheets renderizados do Blender (+ Placeholders/)
   Prefabs/  Scenes/  Audio/  UI/  Data/ (ScriptableObjects)
 docs/             GDD e documentação de entrega
@@ -83,6 +84,7 @@ Quando os assets reais existirem (`Assets/Data/GameRules.asset` gerado da planil
 
 ```bash
 "<caminho do Unity>/Unity.exe" -batchmode -projectPath . -runTests -testPlatform EditMode -testResults TestResults.xml -logFile -
+"<caminho do Unity>/Unity.exe" -batchmode -projectPath . -runTests -testPlatform PlayMode -testResults PlayMode.xml -logFile -
 ```
 
 ## Equipe
