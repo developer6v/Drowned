@@ -45,6 +45,27 @@ namespace Drowned.Tests
             if (scene.IsValid() && SceneManager.sceneCount > 1) yield return SceneManager.UnloadSceneAsync(scene);
         }
 
+        /// <summary>A cena salva em Assets/Scenes/Demo.unity abre e monta o jogo sozinha.</summary>
+        [UnityTest]
+        public IEnumerator Cena_Demo_unity_abre_e_monta_o_jogo()
+        {
+#if UNITY_EDITOR
+            const string path = "Assets/Scenes/Demo.unity";
+            Assert.IsTrue(System.IO.File.Exists(path), $"{path} não existe; rode Drowned → Criar cena Demo");
+            yield return UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(
+                path, new LoadSceneParameters(LoadSceneMode.Single));
+            yield return null;
+            yield return null;
+            var gm = GameManagerBehaviour.Instance;
+            Assert.IsNotNull(gm, "Demo.unity não criou o GameManager");
+            Assert.IsNotNull(gm.Game);
+            Assert.Greater(gm.Game.Structures.Instances.Count(), 0, "Demo.unity sem estruturas iniciais");
+            Assert.IsNotNull(GameObject.Find("HUD"), "Demo.unity sem HUD");
+#else
+            yield break;
+#endif
+        }
+
         [UnityTest]
         public IEnumerator Demo_abre_roda_cinco_dias_e_constroi()
         {
