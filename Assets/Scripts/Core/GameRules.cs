@@ -45,10 +45,20 @@ namespace Drowned.Core
         [Header("População (SCRUM-132, aba População)")]
         [SerializeField] private PopulationConfig _population = new PopulationConfig();
 
+        [Header("Especialistas (SCRUM-144 / SCRUM-150)")]
+        [SerializeField] private List<SpecialistData> _specialists = new List<SpecialistData>();
+
         public int DaysToCollapse => _daysToCollapse;
         public ResourceBundle InitialStock => _initialStock;
         public IReadOnlyList<InitialStructure> InitialStructures => _initialStructures;
         public PopulationConfig Population => _population;
+        public IReadOnlyList<SpecialistData> Specialists => _specialists;
+
+        /// <summary>Define os especialistas em memória. Para testes e para o gerador da planilha.</summary>
+        public void SetSpecialists(IEnumerable<SpecialistData> specialists)
+        {
+            _specialists = specialists != null ? new List<SpecialistData>(specialists) : new List<SpecialistData>();
+        }
 
         /// <summary>Cria regras em memória sem asset. Para testes e para o gerador da planilha.</summary>
         public static GameRules Create(int daysToCollapse, ResourceBundle initialStock, PopulationConfig population, params InitialStructure[] initialStructures)

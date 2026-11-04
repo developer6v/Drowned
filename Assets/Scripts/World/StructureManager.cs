@@ -24,6 +24,9 @@ namespace Drowned.World
         public ResourceManager Resources { get; }
         public PopulationManager Population { get; }
 
+        /// <summary>Multiplicador aplicado a todo custo de construção e upgrade (desconto do Arquiteto, SCRUM-145). Default 1.</summary>
+        public float CostMultiplier { get; private set; } = 1f;
+
         private readonly Dictionary<int, StructureInstance> _instances = new Dictionary<int, StructureInstance>();
 
         public StructureManager(GridMap grid, ResourceManager resources, PopulationManager population)
@@ -55,6 +58,16 @@ namespace Drowned.World
             }
         }
 
+        /// <summary>Troca o multiplicador de custo. Nunca abaixo de zero.</summary>
+        public void SetCostMultiplier(float multiplier) => CostMultiplier = Math.Max(0f, multiplier);
+
+        /// <summary>Custo de construção com o desconto atual. É o que a barra de construção mostra.</summary>
+        public ResourceBundle BuildCostOf(StructureData data)
+        {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            return data.BuildCost * CostMultiplier;
+        }
+
         /// <summary>
         /// Verifica sem efeito colateral se dá para construir. Serve para o preview: posição em vermelho
         /// ou botão desabilitado por falta de recurso.
@@ -64,7 +77,7 @@ namespace Drowned.World
             if (data == null) throw new ArgumentNullException(nameof(data));
             missing = ResourceBundle.Zero;
             if (!Grid.CanPlace(x, y, data.FootprintWidth, data.FootprintHeight)) return BuildResult.InvalidPosition;
-            missing = Resources.Stock.Missing(data.BuildCost);
+            missing = Resources.Stock.Missing(BuildCostOf(data));
             return missing.IsZero ? BuildResult.Ok : BuildResult.InsufficientResources;
         }
 
@@ -75,7 +88,7 @@ namespace Drowned.World
             var result = CanBuild(data, x, y, out missing);
             if (result != BuildResult.Ok) return result;
 
-            if (!Resources.TrySpend(data.BuildCost, out missing)) return BuildResult.InsufficientResources;
+            if (!Resources.TrySpend(BuildCostOf(data), out missing)) return BuildResult.InsufficientResources;
             instance = PlaceAndRegister(data, x, y, level: 1);
             return BuildResult.Ok;
         }
@@ -112,18 +125,21 @@ namespace Drowned.World
             missing = ResourceBundle.Zero;
             if (!_instances.TryGetValue(id, out var instance)) return BuildResult.NotFound;
             if (instance.IsMaxLevel) return BuildResult.MaxLevel;
-            missing = Resources.Stock.Missing(instance.Data.GetLevel(instance.Level + 1).Cost);
+            missing = Resources.Stock.Missing(NextLevelCostOf(instance));
             return missing.IsZero ? BuildResult.Ok : BuildResult.InsufficientResources;
         }
 
-        /// <summary>Custo do próximo nível, para a HUD. Falso se não há próximo nível.</summary>
+        /// <summary>Custo do próximo nível com o desconto atual, para a HUD. Falso se não há próximo nível.</summary>
         public bool TryGetNextLevelCost(int id, out ResourceBundle cost)
         {
             cost = ResourceBundle.Zero;
             if (!_instances.TryGetValue(id, out var instance) || instance.IsMaxLevel) return false;
-            cost = instance.Data.GetLevel(instance.Level + 1).Cost;
+            cost = NextLevelCostOf(instance);
             return true;
         }
+
+        private ResourceBundle NextLevelCostOf(StructureInstance instance) =>
+            instance.Data.GetLevel(instance.Level + 1).Cost * CostMultiplier;
 
         /// <summary>Sobe um nível cobrando o custo do novo nível e trocando produção, consumo e moradia.</summary>
         public BuildResult TryUpgrade(int id, out ResourceBundle missing)
@@ -134,7 +150,7 @@ namespace Drowned.World
             var instance = _instances[id];
             var previous = instance.CurrentLevel;
             var next = instance.Data.GetLevel(instance.Level + 1);
-            if (!Resources.TrySpend(next.Cost, out missing)) return BuildResult.InsufficientResources;
+            if (!Resources.TrySpend(NextLevelCostOf(instance), out missing)) return BuildResult.InsufficientResources;
 
             instance.Level++;
             Register(instance);

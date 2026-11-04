@@ -27,8 +27,14 @@ namespace Drowned.Resources
         public ResourceBundle Stock { get; private set; }
         public int TicksPerDay { get; }
 
-        /// <summary>Soma da produção de todas as fontes, por dia.</summary>
+        /// <summary>Soma da produção de todas as fontes, por dia, já multiplicada por <see cref="ProductionMultiplier"/>.</summary>
         public ResourceBundle ProductionPerDay { get; private set; }
+
+        /// <summary>Soma da produção sem bônus. Para a HUD mostrar "base + bônus".</summary>
+        public ResourceBundle BaseProductionPerDay { get; private set; }
+
+        /// <summary>Multiplicador por recurso aplicado à produção (bônus dos especialistas, SCRUM-145). Default 1.</summary>
+        public ResourceBundle ProductionMultiplier { get; private set; } = ResourceBundle.One;
 
         /// <summary>Soma do consumo de todas as fontes, por dia.</summary>
         public ResourceBundle ConsumptionPerDay { get; private set; }
@@ -77,6 +83,13 @@ namespace Drowned.Resources
         }
 
         public bool HasSource(string id) => _sources.ContainsKey(id);
+
+        /// <summary>Troca o multiplicador de produção. Valores abaixo de zero são tratados como zero.</summary>
+        public void SetProductionMultiplier(ResourceBundle multiplier)
+        {
+            ProductionMultiplier = multiplier.ClampedToZero();
+            RecomputeRates();
+        }
 
         public bool TryGetSource(string id, out ResourceBundle productionPerDay, out ResourceBundle consumptionPerDay)
         {
@@ -141,7 +154,8 @@ namespace Drowned.Resources
                 prod += s.production;
                 cons += s.consumption;
             }
-            ProductionPerDay = prod;
+            BaseProductionPerDay = prod;
+            ProductionPerDay = prod.Scale(ProductionMultiplier);
             ConsumptionPerDay = cons;
             OnRatesChanged?.Invoke();
         }

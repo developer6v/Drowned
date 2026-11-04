@@ -25,6 +25,7 @@ namespace Drowned.Core
         public ResourceManager Resources { get; }
         public PopulationManager Population { get; }
         public StructureManager Structures { get; }
+        public SpecialistManager Specialists { get; }
         public CollapseMonitor Collapse { get; }
         public GameStats Stats { get; }
 
@@ -37,6 +38,7 @@ namespace Drowned.Core
             Resources = new ResourceManager(rules.InitialStock, clock.TicksPerDay);
             Population = new PopulationManager(rules.Population, Resources);
             Structures = new StructureManager(Grid, Resources, Population);
+            Specialists = new SpecialistManager(rules.Specialists, Population, Resources, Structures);
             Collapse = new CollapseMonitor(rules.DaysToCollapse, Resources);
             Stats = new GameStats(Clock, Population, Structures);
 
