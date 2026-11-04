@@ -22,6 +22,9 @@ namespace Drowned.Core
         public UnityEvent<GameState> onStateChanged;
 
         public GameManager Game { get; private set; }
+
+        /// <summary>True se esta partida começou aplicando um save (SaveSystem.PendingLoad), e não do zero.</summary>
+        public bool StartedFromSave { get; private set; }
         public TilemapMapBehaviour Map => _map;
 
         /// <summary>Define regras e mapa por código (bootstrap da demo). Chame antes do Awake (objeto inativo).</summary>
@@ -69,6 +72,7 @@ namespace Drowned.Core
             if (pending != null)
             {
                 SaveSystem.PendingLoad = null;
+                StartedFromSave = true;
                 SaveSystem.Apply(Game, pending);
             }
             else Game.PlaceInitialStructures();
