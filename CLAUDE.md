@@ -7,7 +7,7 @@ Jogo city-sim subaquático em Unity 2D. GDD em `docs/GDD-Drowned.pdf`. Quadro: J
 A IA escreve e prepara; a pessoa abre no editor e decide.
 
 - **Escreve:** C# em `Assets/Scripts`, testes EditMode em `Assets/Tests/EditMode` (e o smoke test PlayMode em `Assets/Tests/PlayMode`), scripts Python de Blender em `tools/blender`, ícones, sons, planilha de balanceamento, documentação, descrições de aceite no Jira.
-- **Nunca edita:** `*.unity`, `*.prefab`, `*.asset` de cena, `ProjectSettings/`, `Packages/manifest.json` (a não ser que a tarefa seja exatamente essa e a pessoa tenha pedido).
+- **Pode criar e editar cenas e prefabs** (`*.unity`, `*.prefab`) quando a tarefa pedir, montando por código ou escrevendo o YAML, e validando com o smoke test PlayMode (decisão de 04/11/2026). **Nunca edita:** `ProjectSettings/` e `Packages/manifest.json` (a não ser que a tarefa seja exatamente essa e a pessoa tenha pedido).
 - **Nunca commita em `main`.** Branch por tarefa com o nome da chave Jira (`SCRUM-124-gameclock`), PR com descrição curta apontando a issue.
 - Antes de começar uma tarefa, a issue precisa ter **descrição de aceite** no Jira. Se não tiver, a IA escreve primeiro e só depois codifica.
 - Ao abrir o PR, comenta na issue do Jira com o link.
