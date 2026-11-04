@@ -32,6 +32,14 @@ namespace Drowned.World
         /// <summary>Célula do Tilemap que corresponde a (0,0) do GridMap.</summary>
         public Vector3Int Origin { get; private set; }
 
+        /// <summary>Define os tilemaps por código (bootstrap da demo). Chame antes do Awake (objeto inativo).</summary>
+        public void Configure(Tilemap ground, Tilemap buildable, bool hideBuildableLayerOnStart = true)
+        {
+            _ground = ground;
+            _buildable = buildable;
+            _hideBuildableLayerOnStart = hideBuildableLayerOnStart;
+        }
+
         /// <summary>
         /// Garante que o GridMap existe. O GameManagerBehaviour chama isto no Awake dele, que roda antes
         /// do Awake deste componente (ordem de execução negativa). Seguro chamar mais de uma vez.

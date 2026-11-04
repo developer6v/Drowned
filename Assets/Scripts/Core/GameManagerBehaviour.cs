@@ -24,6 +24,13 @@ namespace Drowned.Core
         public GameManager Game { get; private set; }
         public TilemapMapBehaviour Map => _map;
 
+        /// <summary>Define regras e mapa por código (bootstrap da demo). Chame antes do Awake (objeto inativo).</summary>
+        public void Configure(GameRules rules, TilemapMapBehaviour map)
+        {
+            _rules = rules;
+            _map = map;
+        }
+
         private void Awake()
         {
             if (Instance != null && Instance != this)

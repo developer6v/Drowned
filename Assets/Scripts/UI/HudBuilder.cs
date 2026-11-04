@@ -24,6 +24,9 @@ namespace Drowned.UI
 
         private GameManager _game;
 
+        /// <summary>Define os ícones por código (bootstrap da demo).</summary>
+        public void Configure(Sprite[] resourceIcons) => _resourceIcons = resourceIcons ?? new Sprite[3];
+
         private void Start()
         {
             var gm = GameManagerBehaviour.Instance;

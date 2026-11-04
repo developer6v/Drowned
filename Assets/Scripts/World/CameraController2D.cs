@@ -57,6 +57,14 @@ namespace Drowned.World
             }
         }
 
+        /// <summary>Define o mapa por código (bootstrap da demo). Chame antes do Start.</summary>
+        public void Configure(TilemapMapBehaviour map, float startOrthoSize = 8f)
+        {
+            _map = map;
+            _startOrthoSize = startOrthoSize;
+            _targetSize = startOrthoSize;
+        }
+
         private void Awake()
         {
             _cam = GetComponent<Camera>();

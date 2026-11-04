@@ -28,6 +28,9 @@ namespace Drowned.Monument
             return data;
         }
 
+        /// <summary>Define o sprite da ruína em memória (demo e gerador da planilha).</summary>
+        public void SetRuinSprite(Sprite sprite) => _ruinSprite = sprite;
+
         private void OnValidate()
         {
             if (_stages.Count == 0)
