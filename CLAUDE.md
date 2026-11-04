@@ -63,6 +63,8 @@ Tudo em `tools/blender`, rodando sem interface: `blender -b --python tools/blend
 
 ## Decisões já tomadas (atualizar quando mudar)
 
-- 2026-10-30: 4 direções para estruturas e habitante (SCRUM-115, a confirmar com o grupo).
+- 2026-11-04: **4 direções** confirmado (SCRUM-115). Escala de tempo **60 s por dia, 24 ticks** (SCRUM-119). Início: 5 habitantes, 100/100/80, Moradia + Gerador + Planta de O2 + Fazenda (SCRUM-120). Colapso com **3 dias** sem energia ou oxigênio (SCRUM-121). Tudo em `docs/balanceamento/*.csv`.
+- 2026-11-04: `.meta` de `Assets/` são versionados; sempre commitar junto com o arquivo.
+- 2026-11-04: planilha de balanceamento = CSVs em `docs/balanceamento`; `Assets/Data` é gerado por **Drowned → Gerar dados da planilha** e também versionado.
 - 2026-10-30: raiz do repositório é a raiz do projeto Unity.
 - 2026-10-30: planilha de balanceamento é a fonte única dos números; ScriptableObjects são gerados a partir dela.
