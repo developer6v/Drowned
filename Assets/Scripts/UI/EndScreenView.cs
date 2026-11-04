@@ -17,7 +17,7 @@ namespace Drowned.UI
         public void Build(Transform canvas, GameManager game)
         {
             _game = game;
-            var overlay = UiKit.Panel(canvas, "EndScreen", new Color(0.01f, 0.04f, 0.10f, 0.92f));
+            var overlay = UiKit.Flat(UiKit.Panel(canvas, "EndScreen", new Color(0.01f, 0.04f, 0.10f, 0.92f)));
             _root = overlay.gameObject;
             UiKit.Stretch(overlay.rectTransform);
 

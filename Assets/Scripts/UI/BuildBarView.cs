@@ -40,7 +40,7 @@ namespace Drowned.UI
             _build = build;
             _selector = selector;
 
-            var panel = UiKit.Panel(canvas, "BuildBar", UiTheme.PanelBg);
+            var panel = UiKit.Flat(UiKit.Panel(canvas, "BuildBar", UiTheme.PanelBg), keepBorder: true);
             UiKit.BottomStretch(panel.rectTransform, 112f);
             var row = UiKit.Horizontal(panel.transform, "Row", 18f, new RectOffset(16, 16, 8, 8));
             UiKit.Stretch(row.GetComponent<RectTransform>());

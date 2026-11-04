@@ -29,7 +29,7 @@ namespace Drowned.UI
         public void Build(Transform canvas, GameManager game, Sprite[] icons, System.Action onOpenResearch, System.Action onOpenSpecialists)
         {
             _game = game;
-            var panel = UiKit.Panel(canvas, "ResourceBar", UiTheme.PanelBg);
+            var panel = UiKit.Flat(UiKit.Panel(canvas, "ResourceBar", UiTheme.PanelBg), keepBorder: true);
             UiKit.TopStretch(panel.rectTransform, 64f);
             var row = UiKit.Horizontal(panel.transform, "Row", 24f, new RectOffset(16, 16, 6, 6));
             UiKit.Stretch(row.GetComponent<RectTransform>());

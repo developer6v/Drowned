@@ -66,7 +66,7 @@ namespace Drowned.World
             go.transform.SetParent(transform, false);
             _ghost = go.AddComponent<SpriteRenderer>();
             _ghost.sortingLayerName = _sortingLayer;
-            _ghost.sortingOrder = 1000;
+            _ghost.sortingOrder = StructureManagerBehaviour.SortingBase + 10000;
             _ghost.enabled = false;
 
             _game.OnStateChanged += _ => Cancel();
@@ -131,7 +131,7 @@ namespace Drowned.World
             LastCheck = _game.Structures.CanBuild(Selected, Anchor.x, Anchor.y, out _);
             _ghost.color = LastCheck == BuildResult.Ok ? _okColor : _blockedColor;
             _ghost.transform.position = FootprintCenter(Anchor, Selected.FootprintWidth, Selected.FootprintHeight);
-            _ghost.sortingOrder = 1000;
+            _ghost.sortingOrder = StructureManagerBehaviour.SortingBase + 10000;
         }
 
         /// <summary>Centro no mundo de uma pegada no grid. Também usado pelos sprites das estruturas.</summary>

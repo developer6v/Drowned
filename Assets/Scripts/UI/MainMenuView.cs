@@ -22,7 +22,7 @@ namespace Drowned.UI
             canvas.transform.SetParent(transform, false);
             var root = canvas.transform;
 
-            var bg = UiKit.Panel(root, "Background", new Color(0.02f, 0.08f, 0.16f, 1f));
+            var bg = UiKit.Flat(UiKit.Panel(root, "Background", new Color(0.02f, 0.08f, 0.16f, 1f)));
             UiKit.Stretch(bg.rectTransform);
 
             // Menu
