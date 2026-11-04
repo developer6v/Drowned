@@ -25,7 +25,9 @@ namespace Drowned.Tests
         [UnitySetUp]
         public IEnumerator SetUp()
         {
-            SceneManager.LoadScene(SceneManager.CreateScene("SmokeScene").name);
+            // Cena vazia só para o teste (não precisa estar nas Build Settings)
+            var scene = SceneManager.CreateScene("SmokeScene");
+            SceneManager.SetActiveScene(scene);
             yield return null;
             new GameObject("DemoBootstrap").AddComponent<DemoBootstrap>();
             // Dois frames: Awake do DemoBootstrap monta tudo; os Behaviours ligam no Start.
@@ -39,6 +41,8 @@ namespace Drowned.Tests
             foreach (var go in Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None))
                 if (go.transform.parent == null) Object.Destroy(go);
             yield return null;
+            var scene = SceneManager.GetSceneByName("SmokeScene");
+            if (scene.IsValid() && SceneManager.sceneCount > 1) yield return SceneManager.UnloadSceneAsync(scene);
         }
 
         [UnityTest]
