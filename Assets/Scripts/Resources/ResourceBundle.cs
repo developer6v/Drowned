@@ -62,6 +62,13 @@ namespace Drowned.Resources
         public ResourceBundle Scale(ResourceBundle factors) => new ResourceBundle(
             _energy * factors._energy, _oxygen * factors._oxygen, _food * factors._food);
 
+        /// <summary>Mínimo componente a componente.</summary>
+        public static ResourceBundle Min(ResourceBundle a, ResourceBundle b) => new ResourceBundle(
+            Mathf.Min(a._energy, b._energy), Mathf.Min(a._oxygen, b._oxygen), Mathf.Min(a._food, b._food));
+
+        /// <summary>Soma dos três valores. Útil para progresso agregado.</summary>
+        public float Total => _energy + _oxygen + _food;
+
         /// <summary>Cópia sem valores negativos. O estoque usa isso para nunca ficar abaixo de zero.</summary>
         public ResourceBundle ClampedToZero() => new ResourceBundle(
             Mathf.Max(0f, _energy), Mathf.Max(0f, _oxygen), Mathf.Max(0f, _food));

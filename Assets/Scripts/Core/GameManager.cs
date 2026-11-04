@@ -1,4 +1,5 @@
 using System;
+using Drowned.Monument;
 using Drowned.Population;
 using Drowned.Research;
 using Drowned.Resources;
@@ -28,6 +29,8 @@ namespace Drowned.Core
         public StructureManager Structures { get; }
         public SpecialistManager Specialists { get; }
         public ResearchManager Research { get; }
+        public MonumentManager Monument { get; }
+        public CityLevel City { get; }
         public CollapseMonitor Collapse { get; }
         public GameStats Stats { get; }
 
@@ -45,9 +48,13 @@ namespace Drowned.Core
             Structures.SetUnlockRules(Research);
             Research.SetBaseSpeedMultiplier(Specialists.ResearchSpeedMultiplier);
             Specialists.OnResearchSpeedChanged += Research.SetBaseSpeedMultiplier;
+            Monument = new MonumentManager(rules.Monument, clock.TicksPerDay, Resources, Population, Specialists, Research);
+            City = new CityLevel(rules.CityLevel, Population, Structures, Research);
             Collapse = new CollapseMonitor(rules.DaysToCollapse, Resources);
             Stats = new GameStats(Clock, Population, Structures);
             Research.OnResearched += HandleResearched;
+            Monument.OnStageCompleted += HandleStageCompleted;
+            Monument.OnCompleted += ReportVictory;
 
             Clock.OnTick += HandleTick;
             Clock.OnNewDay += HandleNewDay;
@@ -77,9 +84,11 @@ namespace Drowned.Core
             if (IsOver) return;
             Resources.Tick();
             Research.Tick();
+            Monument.Tick();
         }
 
         private void HandleResearched(TechnologyData tech) => Stats.RegisterTechnology();
+        private void HandleStageCompleted(int index) => Stats.RegisterMonumentStage();
 
         private void HandleNewDay(int day)
         {
@@ -106,6 +115,8 @@ namespace Drowned.Core
             Collapse.OnCollapse -= HandleCollapse;
             Research.OnResearched -= HandleResearched;
             Specialists.OnResearchSpeedChanged -= Research.SetBaseSpeedMultiplier;
+            Monument.OnStageCompleted -= HandleStageCompleted;
+            Monument.OnCompleted -= ReportVictory;
         }
     }
 }
