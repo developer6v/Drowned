@@ -8,7 +8,7 @@ Projeto da disciplina de Computação Gráfica (UNIFAL, 4º período). O GDD est
 
 | Ferramenta | Versão |
 |---|---|
-| Unity | **6000.0 LTS** (Unity 6, último patch 6000.0.x disponível no Hub) com template **2D (URP)** |
+| Unity | **6000.6.7f1** (Unity 6) com template **Universal 2D** |
 | Blender | **5.2 LTS** (qualquer 4.2+ roda os scripts) |
 | Git LFS | 3.x |
 

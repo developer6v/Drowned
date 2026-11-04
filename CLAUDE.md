@@ -14,7 +14,7 @@ A IA escreve e prepara; a pessoa abre no editor e decide.
 
 ## Versões
 
-Unity **6000.0 LTS** (2D URP). Blender **5.2 LTS**. Conferir `ProjectSettings/ProjectVersion.txt` antes de sugerir API.
+Unity **6000.6.7f1** (Universal 2D). Blender **5.2 LTS**. Conferir `ProjectSettings/ProjectVersion.txt` antes de sugerir API.
 
 ## Organização do código
 
