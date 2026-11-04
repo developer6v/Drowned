@@ -55,6 +55,30 @@ namespace Drowned.Core
             }
         }
 
+        /// <summary>
+        /// Preenche os clips vazios com os placeholders de <c>Assets/Audio/Resources/Placeholder</c>
+        /// (gerados por <c>tools/audio/generate_placeholders.py</c>). Usado pela demo; clips já arrastados não são trocados.
+        /// </summary>
+        public void LoadPlaceholders()
+        {
+            AudioClip Load(string name) => UnityEngine.Resources.Load<AudioClip>("Placeholder/" + name);
+            _click = _click != null ? _click : Load("click");
+            _buildConfirm = _buildConfirm != null ? _buildConfirm : Load("build_confirm");
+            _error = _error != null ? _error : Load("error");
+            _construction = _construction != null ? _construction : Load("construction");
+            _unlock = _unlock != null ? _unlock : Load("unlock");
+            _crisisAlarm = _crisisAlarm != null ? _crisisAlarm : Load("crisis_alarm");
+            _monumentStage = _monumentStage != null ? _monumentStage : Load("monument_stage");
+            _victory = _victory != null ? _victory : Load("victory");
+            _defeat = _defeat != null ? _defeat : Load("defeat");
+            _ambientLoop = _ambientLoop != null ? _ambientLoop : Load("ambient_loop");
+            if (_ambient != null && _ambientLoop != null && !_ambient.isPlaying)
+            {
+                _ambient.clip = _ambientLoop;
+                _ambient.Play();
+            }
+        }
+
         /// <summary>Toca se houver AudioManager na cena. Seguro chamar de qualquer lugar.</summary>
         public static void PlayIfAvailable(GameSound sound)
         {
