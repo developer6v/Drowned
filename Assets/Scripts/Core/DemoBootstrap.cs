@@ -119,8 +119,8 @@ namespace Drowned.Core
 
             if (AudioManager.Instance == null)
             {
-                if (_audioPrefab != null) Instantiate(_audioPrefab);
-                else new GameObject("AudioManager").AddComponent<AudioManager>();
+                var audio = _audioPrefab != null ? Instantiate(_audioPrefab) : new GameObject("AudioManager").AddComponent<AudioManager>();
+                audio.LoadPlaceholders();
             }
 
             var hudGo = new GameObject("HUD");
