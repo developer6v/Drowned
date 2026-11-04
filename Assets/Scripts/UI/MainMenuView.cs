@@ -55,13 +55,20 @@ namespace Drowned.UI
             // Opções
             var opt = UiKit.Panel(root, "Options", UiTheme.PanelBg);
             _options = opt.gameObject;
-            UiKit.Center(opt.rectTransform, new Vector2(460f, 360f));
+            UiKit.Center(opt.rectTransform, new Vector2(460f, 430f));
             var ocol = UiKit.Vertical(opt.transform, "Col", 12f, new RectOffset(28, 28, 28, 28), TextAnchor.UpperCenter);
             UiKit.Stretch(ocol.GetComponent<RectTransform>());
             UiKit.Label(ocol.transform, "Opções", UiTheme.FontLarge, UiTheme.Text, TextAnchor.MiddleCenter, FontStyle.Bold);
             _sfxLabel = VolumeRow(ocol.transform, "Efeitos", () => AudioManager.SfxVolume, v => AudioManager.SfxVolume = v);
             _musicLabel = VolumeRow(ocol.transform, "Ambiente", () => AudioManager.MusicVolume, v => AudioManager.MusicVolume = v);
             UiKit.Label(ocol.transform, $"Resolução: {Screen.width}x{Screen.height} (ajuste nas configurações do sistema)", UiTheme.FontSmall, UiTheme.TextMuted, TextAnchor.MiddleCenter);
+            Button review = null;
+            review = UiKit.Button(ocol.transform, TutorialView.IsDone ? "Rever tutorial" : "Tutorial ativo na próxima partida", () =>
+            {
+                TutorialView.ResetDone();
+                UiKit.ButtonText(review).text = "Tutorial ativo na próxima partida";
+            });
+            UiKit.Size(review, height: 48f);
             UiKit.Size(UiKit.Button(ocol.transform, "Voltar", () => ShowOptions(false)), height: 48f);
             ShowOptions(false);
         }

@@ -21,6 +21,7 @@ namespace Drowned.UI
         public ResearchPanelView ResearchPanel { get; private set; }
         public SpecialistPanelView SpecialistPanel { get; private set; }
         public PauseMenuView PauseMenu { get; private set; }
+        public TutorialView Tutorial { get; private set; }
 
         private GameManager _game;
 
@@ -61,6 +62,8 @@ namespace Drowned.UI
             ResearchPanel.Build(root, _game);
             SpecialistPanel.Build(root, _game);
             Add<CrisisAlertView>("CrisisAlert").Build(root, _game);
+            Tutorial = Add<TutorialView>("Tutorial");
+            Tutorial.Build(root, _game);
             Toast = Add<ToastView>("Toasts");
             Toast.Build(root);
             PauseMenu = Add<PauseMenuView>("PauseMenu");
