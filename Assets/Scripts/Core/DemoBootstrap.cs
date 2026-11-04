@@ -44,7 +44,12 @@ namespace Drowned.Core
                 return;
             }
 
-            var rules = _rules != null ? _rules : DemoContent.CreateRules(out _created);
+            GameRules rules = _rules;
+            if (rules == null)
+            {
+                rules = DemoContent.CreateRules(out var created);
+                _created.AddRange(created);
+            }
             bool demoArt = _rules == null;
 
             // 1. Câmera
