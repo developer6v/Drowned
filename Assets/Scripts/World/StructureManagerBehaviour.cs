@@ -1,25 +1,19 @@
 using System.Collections.Generic;
-using Drowned.Population;
-using Drowned.Resources;
+using Drowned.Core;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Drowned.World
 {
     /// <summary>
-    /// Ponte entre a cena e o <see cref="StructureManager"/> (SCRUM-130 / SCRUM-134).
-    /// Cria um GameObject com SpriteRenderer para cada estrutura construída e troca o sprite no upgrade.
-    /// O preview de colocação e a entrada do mouse ficam na SCRUM-129.
-    ///
-    /// Na cena: um objeto "StructureManager" com este componente, arraste o Grid (com
-    /// <see cref="TilemapMapBehaviour"/>) no campo. Precisa de ResourceManagerBehaviour e
-    /// PopulationManagerBehaviour na cena. Usa Start() porque o TilemapMapBehaviour monta o GridMap no Awake.
+    /// Ponte entre a cena e o <see cref="StructureManager"/> (SCRUM-130 / SCRUM-134). O sistema em si é criado
+    /// pelo <see cref="GameManager"/>. Este componente cria um GameObject com SpriteRenderer para cada
+    /// estrutura e troca o sprite no upgrade. O preview de colocação e a entrada do mouse ficam na SCRUM-129.
     /// </summary>
+    [DefaultExecutionOrder(-70)]
     public sealed class StructureManagerBehaviour : MonoBehaviour
     {
         public static StructureManagerBehaviour Instance { get; private set; }
-
-        [SerializeField] private TilemapMapBehaviour _map;
 
         [Tooltip("Pai dos sprites das estruturas. Se vazio, usa este transform.")]
         [SerializeField] private Transform _structuresParent;
@@ -34,7 +28,11 @@ namespace Drowned.World
 
         public StructureManager Structures { get; private set; }
 
+        private TilemapMapBehaviour _map;
         private readonly Dictionary<int, SpriteRenderer> _views = new Dictionary<int, SpriteRenderer>();
+
+        /// <summary>SpriteRenderer de uma estrutura, para efeitos e seleção. Null se não existe.</summary>
+        public SpriteRenderer GetView(int structureId) => _views.TryGetValue(structureId, out var r) ? r : null;
 
         private void Awake()
         {
@@ -45,20 +43,17 @@ namespace Drowned.World
                 return;
             }
             Instance = this;
-        }
 
-        private void Start()
-        {
-            var resources = ResourceManagerBehaviour.Instance;
-            var population = PopulationManagerBehaviour.Instance;
-            if (_map == null || _map.Map == null || resources == null || population == null)
+            var gm = GameManagerBehaviour.Instance;
+            if (gm == null || gm.Game == null)
             {
-                Debug.LogError("StructureManagerBehaviour: precisa do TilemapMapBehaviour no campo Map e de ResourceManagerBehaviour e PopulationManagerBehaviour na cena.", this);
+                Debug.LogError("StructureManagerBehaviour: não há GameManagerBehaviour inicializado na cena.", this);
                 enabled = false;
                 return;
             }
 
-            Structures = new StructureManager(_map.Map, resources.Resources, population.Population);
+            _map = gm.Map;
+            Structures = gm.Game.Structures;
             Structures.OnStructureBuilt += HandleBuilt;
             Structures.OnStructureChanged += HandleChanged;
             Structures.OnStructureRemoved += HandleRemoved;
@@ -98,6 +93,12 @@ namespace Drowned.World
 
         private void OnDestroy()
         {
+            if (Structures != null)
+            {
+                Structures.OnStructureBuilt -= HandleBuilt;
+                Structures.OnStructureChanged -= HandleChanged;
+                Structures.OnStructureRemoved -= HandleRemoved;
+            }
             if (Instance == this) Instance = null;
         }
     }

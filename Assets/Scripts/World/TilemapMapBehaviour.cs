@@ -32,6 +32,18 @@ namespace Drowned.World
         /// <summary>Célula do Tilemap que corresponde a (0,0) do GridMap.</summary>
         public Vector3Int Origin { get; private set; }
 
+        /// <summary>
+        /// Garante que o GridMap existe. O GameManagerBehaviour chama isto no Awake dele, que roda antes
+        /// do Awake deste componente (ordem de execução negativa). Seguro chamar mais de uma vez.
+        /// </summary>
+        public void EnsureBuilt()
+        {
+            if (Map != null) return;
+            if (Grid == null) Grid = GetComponent<Grid>();
+            if (_ground == null) return;
+            Build();
+        }
+
         private void Awake()
         {
             Grid = GetComponent<Grid>();
@@ -41,7 +53,7 @@ namespace Drowned.World
                 enabled = false;
                 return;
             }
-            Build();
+            if (Map == null) Build(); // pode já ter sido montado por EnsureBuilt()
             if (_hideBuildableLayerOnStart) SetBuildableOverlayVisible(false);
         }
 
