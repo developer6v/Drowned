@@ -1,0 +1,11 @@
+id;nome;custo;prerequisitos;efeitos;descricao
+algae;Algas resistentes;40;;ProductionBonus:Food:0.2;Cepas de alga que rendem mais alimento.
+turbines;Turbinas eficientes;50;;ProductionBonus:Energy:0.2;Geradores produzem mais energia.
+filters;Filtros de membrana;50;;ProductionBonus:Oxygen:0.2;Plantas de oxigenio mais eficientes.
+modular;Engenharia modular;60;;UnlockLevel:housing:2;Libera o nivel 2 da Moradia.
+hydroponics;Hidroponia vertical;80;algae;UnlockLevel:algae_farm:2;Libera o nivel 2 da Fazenda de algas.
+geothermal;Reator geotermico;100;turbines;UnlockLevel:generator:2;Libera o nivel 2 do Gerador.
+photosynthesis;Fotossintese artificial;100;filters;UnlockLevel:oxygen_plant:2;Libera o nivel 2 da Planta de oxigenio.
+compact_housing;Habitacao compacta;120;modular;HousingBonus:0.25;Moradias abrigam 25% mais habitantes.
+computing;Computacao submersa;150;hydroponics|geothermal;ResearchBonus:0.3|UnlockLevel:lab:2;Pesquisa 30% mais rapida e libera o nivel 2 do Laboratorio.
+monumental;Arquitetura monumental;200;compact_housing;;Conhecimento necessario para as etapas finais do Monumento.

@@ -44,13 +44,16 @@ namespace Drowned.Core
                 return;
             }
 
-            GameRules rules = _rules;
+            // Regras: campo do Inspector > Assets/Data/Resources/GameRules.asset (gerado da planilha, SCRUM-118)
+            // > conteúdo em memória com os números propostos (DemoContent).
+            GameRules rules = _rules != null ? _rules : Resources.Load<GameRules>("GameRules");
+            bool demoArt = rules == null;
             if (rules == null)
             {
+                Debug.Log("DemoBootstrap: GameRules.asset não encontrado; usando DemoContent. Rode Drowned → Gerar dados da planilha.", this);
                 rules = DemoContent.CreateRules(out var created);
                 _created.AddRange(created);
             }
-            bool demoArt = _rules == null;
 
             // 1. Câmera
             var cam = Camera.main;
@@ -67,8 +70,10 @@ namespace Drowned.Core
 
             // 2. Relógio
             var clockGo = new GameObject("GameClock");
-            clockGo.AddComponent<GameClockBehaviour>();
+            clockGo.SetActive(false); // Configure() precisa rodar antes do Awake
+            clockGo.AddComponent<GameClockBehaviour>().Configure(rules.SecondsPerDay, rules.TicksPerDay);
             clockGo.AddComponent<GameSpeedInput>();
+            clockGo.SetActive(true);
 
             // 3. Grid e tilemaps
             var map = BuildMap();
@@ -126,7 +131,7 @@ namespace Drowned.Core
             var hudGo = new GameObject("HUD");
             hudGo.SetActive(false);
             var hud = hudGo.AddComponent<HudBuilder>();
-            hud.Configure(demoArt ? DemoContent.ResourceIcons() : new Sprite[3]);
+            hud.Configure(DemoContent.ResourceIcons()); // ícones finais: SCRUM-184
             hudGo.SetActive(true);
         }
 

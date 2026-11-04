@@ -1,0 +1,6 @@
+etapa;nome;req_energia;req_oxigenio;req_alimento;contrib_energia;contrib_oxigenio;contrib_alimento;populacao_minima;especialistas;tecnologias;sprite
+0;Ruina;0;0;0;0;0;0;0;;;Monument/Monument_Ruin
+1;Fundacao;300;200;150;30;20;15;10;;;Monument/Monument_S1
+2;Estrutura;600;400;300;50;35;25;15;engineer;modular;Monument/Monument_S2
+3;Sistemas;1000;700;500;80;60;40;25;engineer|scientist;geothermal|monumental;Monument/Monument_S3
+4;Acabamento;1500;1000;800;120;80;60;30;engineer|biologist|scientist|architect;computing;Monument/Monument_S4

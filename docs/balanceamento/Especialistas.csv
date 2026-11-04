@@ -1,0 +1,5 @@
+id;nome;populacao_minima;bonus;valor;descricao
+engineer;Engenheiro;10;EnergyProduction;0.20;Otimiza os geradores da cidade.
+biologist;Biologo;15;FoodProduction;0.20;Cultiva algas mais produtivas.
+scientist;Cientista;20;ResearchSpeed;0.25;Acelera a pesquisa.
+architect;Arquiteto;30;BuildCostDiscount;0.15;Projeta construcoes mais baratas.

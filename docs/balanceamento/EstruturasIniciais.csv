@@ -1,0 +1,5 @@
+id;x;y;nivel;Justificativa
+housing;6;6;1;Abrigar os moradores
+generator;8;6;1;Iniciar producao de energia
+oxygen_plant;6;8;1;Iniciar producao de oxigenio
+algae_farm;8;8;1;Iniciar producao de alimento

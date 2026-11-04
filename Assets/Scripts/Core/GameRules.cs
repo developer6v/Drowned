@@ -36,6 +36,12 @@ namespace Drowned.Core
             }
         }
 
+        [Header("Escala de tempo (SCRUM-119, aba Tempo)")]
+        [Tooltip("Segundos reais por dia simulado na velocidade 1x.")]
+        [SerializeField, Min(1f)] private float _secondsPerDay = 60f;
+        [Tooltip("Ticks de simulação por dia.")]
+        [SerializeField, Min(1)] private int _ticksPerDay = 24;
+
         [Header("Colapso (SCRUM-121, aba Tempo)")]
         [Tooltip("Dias consecutivos com energia OU oxigênio zerados até a derrota.")]
         [SerializeField, Min(1)] private int _daysToCollapse = 3;
@@ -63,7 +69,18 @@ namespace Drowned.Core
         [Header("Nível de desenvolvimento (SCRUM-162)")]
         [SerializeField] private CityLevelConfig _cityLevel = new CityLevelConfig();
 
+        public float SecondsPerDay => _secondsPerDay;
+        public int TicksPerDay => _ticksPerDay;
         public int DaysToCollapse => _daysToCollapse;
+
+        /// <summary>Define a escala de tempo em memória. Para testes e para o gerador da planilha.</summary>
+        public void SetTime(float secondsPerDay, int ticksPerDay)
+        {
+            if (secondsPerDay < 1f) throw new ArgumentOutOfRangeException(nameof(secondsPerDay));
+            if (ticksPerDay < 1) throw new ArgumentOutOfRangeException(nameof(ticksPerDay));
+            _secondsPerDay = secondsPerDay;
+            _ticksPerDay = ticksPerDay;
+        }
         public IReadOnlyList<StructureData> Structures => _structures;
         public ResourceBundle InitialStock => _initialStock;
 
