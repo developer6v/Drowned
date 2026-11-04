@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Drowned.Population;
+using Drowned.Research;
 using Drowned.Resources;
 using UnityEngine;
 
@@ -48,16 +49,26 @@ namespace Drowned.Core
         [Header("Especialistas (SCRUM-144 / SCRUM-150)")]
         [SerializeField] private List<SpecialistData> _specialists = new List<SpecialistData>();
 
+        [Header("Tecnologias (SCRUM-146 / SCRUM-149)")]
+        [SerializeField] private List<TechnologyData> _technologies = new List<TechnologyData>();
+
         public int DaysToCollapse => _daysToCollapse;
         public ResourceBundle InitialStock => _initialStock;
         public IReadOnlyList<InitialStructure> InitialStructures => _initialStructures;
         public PopulationConfig Population => _population;
         public IReadOnlyList<SpecialistData> Specialists => _specialists;
+        public IReadOnlyList<TechnologyData> Technologies => _technologies;
 
         /// <summary>Define os especialistas em memória. Para testes e para o gerador da planilha.</summary>
         public void SetSpecialists(IEnumerable<SpecialistData> specialists)
         {
             _specialists = specialists != null ? new List<SpecialistData>(specialists) : new List<SpecialistData>();
+        }
+
+        /// <summary>Define as tecnologias em memória. Para testes e para o gerador da planilha.</summary>
+        public void SetTechnologies(IEnumerable<TechnologyData> technologies)
+        {
+            _technologies = technologies != null ? new List<TechnologyData>(technologies) : new List<TechnologyData>();
         }
 
         /// <summary>Cria regras em memória sem asset. Para testes e para o gerador da planilha.</summary>

@@ -25,8 +25,14 @@ namespace Drowned.Population
         public PopulationConfig Config { get; }
         public int Population { get; private set; }
 
-        /// <summary>Soma da capacidade de moradia das estruturas construídas.</summary>
+        /// <summary>Capacidade de moradia efetiva: soma das estruturas x <see cref="HousingMultiplier"/>, arredondada para baixo.</summary>
         public int HousingCapacity { get; private set; }
+
+        /// <summary>Soma da capacidade de moradia das estruturas construídas, sem bônus.</summary>
+        public int BaseHousingCapacity { get; private set; }
+
+        /// <summary>Multiplicador de moradia (tecnologias, SCRUM-148). Default 1.</summary>
+        public float HousingMultiplier { get; private set; } = 1f;
 
         public int FreeHousing => Math.Max(0, HousingCapacity - Population);
 
@@ -37,21 +43,36 @@ namespace Drowned.Population
             Config = config ?? throw new ArgumentNullException(nameof(config));
             _resources = resources ?? throw new ArgumentNullException(nameof(resources));
             if (initialHousingCapacity < 0) throw new ArgumentOutOfRangeException(nameof(initialHousingCapacity));
+            BaseHousingCapacity = initialHousingCapacity;
             HousingCapacity = initialHousingCapacity;
             Population = config.InitialPopulation;
             RegisterConsumption();
         }
 
+        /// <summary>Define a capacidade base (soma das estruturas).</summary>
         public void SetHousingCapacity(int capacity)
         {
             if (capacity < 0) throw new ArgumentOutOfRangeException(nameof(capacity));
-            if (capacity == HousingCapacity) return;
-            HousingCapacity = capacity;
-            OnHousingCapacityChanged?.Invoke(HousingCapacity);
+            BaseHousingCapacity = capacity;
+            RecomputeHousing();
         }
 
-        /// <summary>Soma (ou subtrai, se negativo) capacidade de moradia. Usado ao construir, melhorar ou remover moradias.</summary>
-        public void AddHousingCapacity(int delta) => SetHousingCapacity(Math.Max(0, HousingCapacity + delta));
+        /// <summary>Soma (ou subtrai, se negativo) capacidade base. Usado ao construir, melhorar ou remover moradias.</summary>
+        public void AddHousingCapacity(int delta) => SetHousingCapacity(Math.Max(0, BaseHousingCapacity + delta));
+
+        public void SetHousingMultiplier(float multiplier)
+        {
+            HousingMultiplier = Math.Max(0f, multiplier);
+            RecomputeHousing();
+        }
+
+        private void RecomputeHousing()
+        {
+            int effective = (int)Math.Floor(BaseHousingCapacity * HousingMultiplier + 1e-4);
+            if (effective == HousingCapacity) return;
+            HousingCapacity = effective;
+            OnHousingCapacityChanged?.Invoke(HousingCapacity);
+        }
 
         /// <summary>Aplica a regra diária. Ligar em <c>GameClock.OnNewDay</c>.</summary>
         public void AdvanceDay()

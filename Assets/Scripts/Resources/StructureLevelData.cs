@@ -23,26 +23,32 @@ namespace Drowned.Resources
         [Tooltip("Quantos habitantes esta estrutura abriga. Zero para tudo que não é moradia.")]
         [SerializeField, Min(0)] private int _housingCapacity;
 
+        [Tooltip("Pontos de pesquisa por dia (laboratório). Zero para as outras estruturas.")]
+        [SerializeField, Min(0f)] private float _researchPerDay;
+
         [Tooltip("Sprite renderizado no Blender para este nível (direção padrão).")]
         [SerializeField] private Sprite _sprite;
 
         public StructureLevelData() { }
 
         /// <summary>Construtor para testes e para o gerador a partir da planilha.</summary>
-        public StructureLevelData(ResourceBundle cost, ResourceBundle productionPerDay, ResourceBundle consumptionPerDay, int housingCapacity = 0, Sprite sprite = null)
+        public StructureLevelData(ResourceBundle cost, ResourceBundle productionPerDay, ResourceBundle consumptionPerDay, int housingCapacity = 0, Sprite sprite = null, float researchPerDay = 0f)
         {
             if (housingCapacity < 0) throw new ArgumentOutOfRangeException(nameof(housingCapacity));
+            if (researchPerDay < 0f) throw new ArgumentOutOfRangeException(nameof(researchPerDay));
             _cost = cost;
             _productionPerDay = productionPerDay;
             _consumptionPerDay = consumptionPerDay;
             _housingCapacity = housingCapacity;
             _sprite = sprite;
+            _researchPerDay = researchPerDay;
         }
 
         public ResourceBundle Cost => _cost;
         public ResourceBundle ProductionPerDay => _productionPerDay;
         public ResourceBundle ConsumptionPerDay => _consumptionPerDay;
         public int HousingCapacity => _housingCapacity;
+        public float ResearchPerDay => _researchPerDay;
         public Sprite Sprite => _sprite;
 
         /// <summary>Saldo por dia (produção menos consumo). Útil para a HUD mostrar o efeito de construir.</summary>

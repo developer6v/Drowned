@@ -11,7 +11,9 @@ namespace Drowned.World
         /// <summary>A estrutura já está no último nível.</summary>
         MaxLevel = 3,
         /// <summary>Id de estrutura desconhecido.</summary>
-        NotFound = 4
+        NotFound = 4,
+        /// <summary>Estrutura ou nível ainda não liberado por tecnologia.</summary>
+        Locked = 5
     }
 
     public static class BuildResultExtensions
@@ -24,6 +26,7 @@ namespace Drowned.World
             BuildResult.InsufficientResources => "Recursos insuficientes.",
             BuildResult.MaxLevel => "Nível máximo atingido.",
             BuildResult.NotFound => "Estrutura não encontrada.",
+            BuildResult.Locked => "Requer tecnologia.",
             _ => "?"
         };
     }

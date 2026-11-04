@@ -1,5 +1,6 @@
 using System;
 using Drowned.Population;
+using Drowned.Research;
 using Drowned.Resources;
 using Drowned.World;
 
@@ -26,6 +27,7 @@ namespace Drowned.Core
         public PopulationManager Population { get; }
         public StructureManager Structures { get; }
         public SpecialistManager Specialists { get; }
+        public ResearchManager Research { get; }
         public CollapseMonitor Collapse { get; }
         public GameStats Stats { get; }
 
@@ -39,8 +41,13 @@ namespace Drowned.Core
             Population = new PopulationManager(rules.Population, Resources);
             Structures = new StructureManager(Grid, Resources, Population);
             Specialists = new SpecialistManager(rules.Specialists, Population, Resources, Structures);
+            Research = new ResearchManager(rules.Technologies, clock.TicksPerDay, Resources, Population, Structures);
+            Structures.SetUnlockRules(Research);
+            Research.SetBaseSpeedMultiplier(Specialists.ResearchSpeedMultiplier);
+            Specialists.OnResearchSpeedChanged += Research.SetBaseSpeedMultiplier;
             Collapse = new CollapseMonitor(rules.DaysToCollapse, Resources);
             Stats = new GameStats(Clock, Population, Structures);
+            Research.OnResearched += HandleResearched;
 
             Clock.OnTick += HandleTick;
             Clock.OnNewDay += HandleNewDay;
@@ -69,7 +76,10 @@ namespace Drowned.Core
         {
             if (IsOver) return;
             Resources.Tick();
+            Research.Tick();
         }
+
+        private void HandleResearched(TechnologyData tech) => Stats.RegisterTechnology();
 
         private void HandleNewDay(int day)
         {
@@ -94,6 +104,8 @@ namespace Drowned.Core
             Clock.OnTick -= HandleTick;
             Clock.OnNewDay -= HandleNewDay;
             Collapse.OnCollapse -= HandleCollapse;
+            Research.OnResearched -= HandleResearched;
+            Specialists.OnResearchSpeedChanged -= Research.SetBaseSpeedMultiplier;
         }
     }
 }
