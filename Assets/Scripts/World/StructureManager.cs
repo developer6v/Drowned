@@ -27,6 +27,14 @@ namespace Drowned.World
         /// <summary>Multiplicador aplicado a todo custo de construção e upgrade (desconto do Arquiteto, SCRUM-145). Default 1.</summary>
         public float CostMultiplier { get; private set; } = 1f;
 
+        /// <summary>Regras de desbloqueio por tecnologia (SCRUM-148). Null = tudo liberado.</summary>
+        public IUnlockRules UnlockRules { get; private set; }
+
+        public void SetUnlockRules(IUnlockRules rules) => UnlockRules = rules;
+
+        public bool IsUnlocked(StructureData data) => UnlockRules == null || UnlockRules.IsStructureUnlocked(data);
+        public bool IsLevelUnlocked(StructureData data, int level) => UnlockRules == null || UnlockRules.IsLevelUnlocked(data, level);
+
         private readonly Dictionary<int, StructureInstance> _instances = new Dictionary<int, StructureInstance>();
 
         public StructureManager(GridMap grid, ResourceManager resources, PopulationManager population)
@@ -77,6 +85,7 @@ namespace Drowned.World
             if (data == null) throw new ArgumentNullException(nameof(data));
             missing = ResourceBundle.Zero;
             if (!Grid.CanPlace(x, y, data.FootprintWidth, data.FootprintHeight)) return BuildResult.InvalidPosition;
+            if (!IsUnlocked(data)) return BuildResult.Locked;
             missing = Resources.Stock.Missing(BuildCostOf(data));
             return missing.IsZero ? BuildResult.Ok : BuildResult.InsufficientResources;
         }
@@ -125,6 +134,7 @@ namespace Drowned.World
             missing = ResourceBundle.Zero;
             if (!_instances.TryGetValue(id, out var instance)) return BuildResult.NotFound;
             if (instance.IsMaxLevel) return BuildResult.MaxLevel;
+            if (!IsLevelUnlocked(instance.Data, instance.Level + 1)) return BuildResult.Locked;
             missing = Resources.Stock.Missing(NextLevelCostOf(instance));
             return missing.IsZero ? BuildResult.Ok : BuildResult.InsufficientResources;
         }

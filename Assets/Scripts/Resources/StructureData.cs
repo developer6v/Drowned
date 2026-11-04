@@ -25,6 +25,13 @@ namespace Drowned.Resources
         [SerializeField, Min(1)] private int _footprintWidth = 1;
         [SerializeField, Min(1)] private int _footprintHeight = 1;
 
+        [Header("Desbloqueio (SCRUM-148)")]
+        [Tooltip("Se verdadeiro, só pode ser construída depois de uma tecnologia com efeito 'Libera estrutura' para este id.")]
+        [SerializeField] private bool _requiresTechnology;
+
+        [Tooltip("Nível máximo sem tecnologia. Níveis acima exigem uma tecnologia com efeito 'Libera nível'.")]
+        [SerializeField, Min(1)] private int _baseMaxLevel = 1;
+
         [Header("Níveis (índice 0 = nível 1 = construção)")]
         [SerializeField] private List<StructureLevelData> _levels = new List<StructureLevelData>();
 
@@ -33,6 +40,15 @@ namespace Drowned.Resources
         public StructureCategory Category => _category;
         public int FootprintWidth => _footprintWidth;
         public int FootprintHeight => _footprintHeight;
+        public bool RequiresTechnology => _requiresTechnology;
+        public int BaseMaxLevel => _baseMaxLevel;
+
+        /// <summary>Define as exigências de desbloqueio em memória. Para testes e para o gerador da planilha.</summary>
+        public void SetUnlockRequirements(bool requiresTechnology, int baseMaxLevel)
+        {
+            _requiresTechnology = requiresTechnology;
+            _baseMaxLevel = Mathf.Max(1, baseMaxLevel);
+        }
 
         /// <summary>Quantidade de níveis. O nível máximo é igual a este valor.</summary>
         public int LevelCount => _levels.Count;
