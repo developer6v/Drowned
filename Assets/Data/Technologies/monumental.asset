@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca145b97099c054aa54d11562c50c8d, type: 3}
+  m_Name: monumental
+  m_EditorClassIdentifier: Drowned.Runtime::Drowned.Research.TechnologyData
+  _id: monumental
+  _displayName: Arquitetura monumental
+  _description: Conhecimento necessario para as etapas finais do Monumento.
+  _cost: 200
+  _prerequisites:
+  - {fileID: 11400000, guid: 2df2766861c7eba4f890757e9435137e, type: 2}
+  _effects: []
+  _icon: {fileID: 0}

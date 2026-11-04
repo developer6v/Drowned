@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92816462b3f536a4d9116d73980cdc58, type: 3}
+  m_Name: algae_farm
+  m_EditorClassIdentifier: Drowned.Runtime::Drowned.Resources.StructureData
+  _id: algae_farm
+  _displayName: Fazenda de algas
+  _category: 1
+  _footprintWidth: 2
+  _footprintHeight: 2
+  _requiresTechnology: 0
+  _baseMaxLevel: 1
+  _levels:
+  - _cost:
+      _energy: 30
+      _oxygen: 10
+      _food: 0
+    _productionPerDay:
+      _energy: 0
+      _oxygen: 0
+      _food: 12
+    _consumptionPerDay:
+      _energy: 3
+      _oxygen: 0
+      _food: 0
+    _housingCapacity: 0
+    _researchPerDay: 0
+    _sprite: {fileID: 8143104867685224780, guid: 29d0fdeb6b2eb2a4fb5acb960094769e, type: 3}
+  - _cost:
+      _energy: 60
+      _oxygen: 20
+      _food: 0
+    _productionPerDay:
+      _energy: 0
+      _oxygen: 0
+      _food: 28
+    _consumptionPerDay:
+      _energy: 5
+      _oxygen: 0
+      _food: 0
+    _housingCapacity: 0
+    _researchPerDay: 0
+    _sprite: {fileID: 6486845485898758864, guid: a4058479eda2b9a46ae1caae33d2b195, type: 3}

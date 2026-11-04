@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca145b97099c054aa54d11562c50c8d, type: 3}
+  m_Name: compact_housing
+  m_EditorClassIdentifier: Drowned.Runtime::Drowned.Research.TechnologyData
+  _id: compact_housing
+  _displayName: Habitacao compacta
+  _description: Moradias abrigam 25% mais habitantes.
+  _cost: 120
+  _prerequisites:
+  - {fileID: 11400000, guid: 2392aa5f70957194fb39b7de8f4e9939, type: 2}
+  _effects:
+  - _type: 4
+    _structureId: 
+    _level: 1
+    _resource: 0
+    _value: 0.25
+  _icon: {fileID: 0}
