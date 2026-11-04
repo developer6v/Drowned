@@ -16,6 +16,7 @@ namespace Drowned.Resources
         [SerializeField] private float _food;
 
         public static readonly ResourceBundle Zero = new ResourceBundle(0f, 0f, 0f);
+        public static readonly ResourceBundle One = new ResourceBundle(1f, 1f, 1f);
 
         public ResourceBundle(float energy, float oxygen, float food)
         {
@@ -56,6 +57,10 @@ namespace Drowned.Resources
             Mathf.Max(0f, cost._energy - _energy),
             Mathf.Max(0f, cost._oxygen - _oxygen),
             Mathf.Max(0f, cost._food - _food));
+
+        /// <summary>Multiplicação componente a componente. Usado pelos multiplicadores de produção dos especialistas.</summary>
+        public ResourceBundle Scale(ResourceBundle factors) => new ResourceBundle(
+            _energy * factors._energy, _oxygen * factors._oxygen, _food * factors._food);
 
         /// <summary>Cópia sem valores negativos. O estoque usa isso para nunca ficar abaixo de zero.</summary>
         public ResourceBundle ClampedToZero() => new ResourceBundle(
