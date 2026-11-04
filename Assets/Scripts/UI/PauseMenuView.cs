@@ -21,7 +21,7 @@ namespace Drowned.UI
         {
             _game = game;
             _toast = toast;
-            var overlay = UiKit.Panel(canvas, "PauseMenu", new Color(0f, 0f, 0f, 0.55f));
+            var overlay = UiKit.Flat(UiKit.Panel(canvas, "PauseMenu", new Color(0f, 0f, 0f, 0.55f)));
             _root = overlay.gameObject;
             UiKit.Stretch(overlay.rectTransform);
 

@@ -110,7 +110,7 @@ namespace Drowned.Core
                 Vector3 a = map.GridToWorldCenter(cx, cy);
                 Vector3 b = map.GridToWorldCenter(cx + _monumentSize - 1, cy + _monumentSize - 1);
                 monGo.transform.position = (a + b) * 0.5f;
-                sr.sortingOrder = -(cx + cy);
+                sr.sortingOrder = StructureManagerBehaviour.SortingOrderFor(cx, cy);
                 if (demoArt) sr.sprite = DemoContent.RuinSprite();
                 monGo.AddComponent<MonumentBehaviour>();
                 monGo.SetActive(true);

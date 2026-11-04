@@ -27,7 +27,7 @@ namespace Drowned.UI
             _borders = new Image[4];
             for (int i = 0; i < 4; i++)
             {
-                var img = UiKit.Panel(root, "Border" + i, UiTheme.Danger);
+                var img = UiKit.Flat(UiKit.Panel(root, "Border" + i, UiTheme.Danger));
                 img.raycastTarget = false;
                 var rt = img.rectTransform;
                 switch (i)

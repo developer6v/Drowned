@@ -60,7 +60,7 @@ namespace Drowned.UI
             return Rect(go);
         }
 
-        /// <summary>Painel com fundo.</summary>
+        /// <summary>Painel com fundo, cantos arredondados e borda fina (SCRUM-192). Para overlays de tela cheia use <see cref="Flat"/>.</summary>
         public static Image Panel(Transform parent, string name, Color color)
         {
             var go = new GameObject(name, typeof(RectTransform), typeof(Image));
@@ -68,7 +68,111 @@ namespace Drowned.UI
             var img = go.GetComponent<Image>();
             img.color = color;
             img.raycastTarget = true;
+            Round(img);
+            AddBorder(img);
             return img;
+        }
+
+        /// <summary>Tira os cantos (e a borda, se pedido) de um painel: para overlays de tela cheia e faixas finas.</summary>
+        public static Image Flat(Image img, bool keepBorder = false)
+        {
+            img.sprite = null;
+            img.type = Image.Type.Simple;
+            var border = img.transform.Find(BorderName);
+            if (border != null)
+            {
+                if (keepBorder) border.GetComponent<Image>().sprite = RingSprite(SquareRingRadius);
+                else Object.DestroyImmediate(border.gameObject);
+            }
+            return img;
+        }
+
+        private const string BorderName = "Border";
+        private const int SquareRingRadius = 2;
+
+        private static void Round(Image img)
+        {
+            img.sprite = RoundedSprite;
+            img.type = Image.Type.Sliced;
+            img.pixelsPerUnitMultiplier = 1f;
+        }
+
+        private static void AddBorder(Graphic g)
+        {
+            var go = new GameObject(BorderName, typeof(RectTransform), typeof(Image), typeof(LayoutElement));
+            go.transform.SetParent(g.transform, false);
+            go.transform.SetAsFirstSibling();
+            go.GetComponent<LayoutElement>().ignoreLayout = true;
+            var img = go.GetComponent<Image>();
+            img.sprite = RingSprite(UiTheme.CornerRadius);
+            img.type = Image.Type.Sliced;
+            img.fillCenter = false;
+            img.color = UiTheme.PanelBorder;
+            img.raycastTarget = false;
+            Stretch(img.rectTransform);
+        }
+
+        private static readonly System.Collections.Generic.Dictionary<int, Sprite> _rings =
+            new System.Collections.Generic.Dictionary<int, Sprite>();
+
+        /// <summary>Anel (só a borda) de cantos arredondados com espessura <see cref="UiTheme.BorderWidth"/>, 9-slice.</summary>
+        public static Sprite RingSprite(int radius)
+        {
+            if (_rings.TryGetValue(radius, out var cached) && cached != null) return cached;
+            var sprite = MakeRoundedSprite("UiRing" + radius, Mathf.Max(1, radius), UiTheme.BorderWidth);
+            _rings[radius] = sprite;
+            return sprite;
+        }
+
+        /// <summary>
+        /// Gera um retângulo branco de cantos arredondados (9-slice). <paramref name="ringWidth"/> &lt;= 0 = cheio;
+        /// &gt; 0 = só um anel com essa espessura. Bordas suavizadas em 1 px.
+        /// </summary>
+        private static Sprite MakeRoundedSprite(string name, int r, float ringWidth)
+        {
+            int size = r * 2 + 2;
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false)
+            {
+                wrapMode = TextureWrapMode.Clamp,
+                filterMode = FilterMode.Bilinear,
+                name = name,
+                hideFlags = HideFlags.DontSave,
+            };
+            var px = new Color32[size * size];
+            for (int y = 0; y < size; y++)
+                for (int x = 0; x < size; x++)
+                {
+                    // Distância até o centro do canto mais próximo; nas bordas retas vira a distância até a linha interna.
+                    float cx = Mathf.Clamp(x + 0.5f, r, size - r);
+                    float cy = Mathf.Clamp(y + 0.5f, r, size - r);
+                    float dx = x + 0.5f - cx, dy = y + 0.5f - cy;
+                    float d = Mathf.Sqrt(dx * dx + dy * dy);
+                    float a = Mathf.Clamp01(r - d + 0.5f);
+                    if (ringWidth > 0f) a -= Mathf.Clamp01(r - ringWidth - d + 0.5f);
+                    px[y * size + x] = new Color32(255, 255, 255, (byte)Mathf.RoundToInt(Mathf.Clamp01(a) * 255f));
+                }
+            tex.SetPixels32(px);
+            tex.Apply(false, true);
+            var sprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f, 0,
+                SpriteMeshType.FullRect, new Vector4(r, r, r, r));
+            sprite.name = name;
+            sprite.hideFlags = HideFlags.DontSave;
+            return sprite;
+        }
+
+        private static Sprite _rounded;
+
+        /// <summary>
+        /// Retângulo branco de cantos arredondados, 9-slice, gerado por código (sem asset). O raio vem de
+        /// <see cref="UiTheme.CornerRadius"/>; a cor vem do Image.
+        /// </summary>
+        public static Sprite RoundedSprite
+        {
+            get
+            {
+                if (_rounded == null) _rounded = MakeRoundedSprite("UiRounded", Mathf.Max(1, UiTheme.CornerRadius), 0f);
+                return _rounded;
+            }
         }
 
         public static Text Label(Transform parent, string text, int size = UiTheme.FontNormal, Color? color = null,
@@ -86,6 +190,9 @@ namespace Drowned.UI
             t.raycastTarget = false;
             t.horizontalOverflow = HorizontalWrapMode.Wrap;
             t.verticalOverflow = VerticalWrapMode.Overflow;
+            var shadow = go.AddComponent<Shadow>();
+            shadow.effectColor = UiTheme.TextShadow;
+            shadow.effectDistance = UiTheme.TextShadowOffset;
             return t;
         }
 
@@ -95,6 +202,7 @@ namespace Drowned.UI
             go.transform.SetParent(parent, false);
             var img = go.GetComponent<Image>();
             img.color = Color.white;
+            Round(img);
             var btn = go.GetComponent<Button>();
             var colors = btn.colors;
             colors.normalColor = UiTheme.Button;
@@ -119,6 +227,13 @@ namespace Drowned.UI
             c.selectedColor = c.normalColor;
             c.highlightedColor = selected ? UiTheme.ButtonSelected : UiTheme.ButtonHover;
             btn.colors = c;
+            var label = ButtonText(btn);
+            if (label != null)
+            {
+                label.color = selected ? UiTheme.TextOnAmber : UiTheme.Text;
+                var shadow = label.GetComponent<Shadow>();
+                if (shadow != null) shadow.enabled = !selected;
+            }
         }
 
         public static Text ButtonText(Button btn) => btn.GetComponentInChildren<Text>();
@@ -126,7 +241,7 @@ namespace Drowned.UI
         /// <summary>Barra de progresso: fundo + preenchimento. Devolve o Image de preenchimento (use fillAmount).</summary>
         public static Image ProgressBar(Transform parent, float height, Color? fill = null)
         {
-            var bg = Panel(parent, "Bar", UiTheme.BarBg);
+            var bg = Flat(Panel(parent, "Bar", UiTheme.BarBg));
             var le = bg.gameObject.AddComponent<LayoutElement>();
             le.minHeight = height;
             le.preferredHeight = height;

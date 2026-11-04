@@ -15,6 +15,15 @@ namespace Drowned.World
     {
         public static StructureManagerBehaviour Instance { get; private set; }
 
+        /// <summary>
+        /// Ordem base dos sprites de estrutura e do Monumento. Fica acima dos Tilemaps (chão 0, área construível 1)
+        /// e abaixo do fantasma do modo construção. Sem isso as estruturas ficavam atrás do chão.
+        /// </summary>
+        public const int SortingBase = 1000;
+
+        /// <summary>Ordem de desenho em isométrico: quem está mais à frente (x + y menor) desenha por cima.</summary>
+        public static int SortingOrderFor(int x, int y) => SortingBase - (x + y);
+
         [Tooltip("Pai dos sprites das estruturas. Se vazio, usa este transform.")]
         [SerializeField] private Transform _structuresParent;
 
@@ -70,8 +79,7 @@ namespace Drowned.World
 
             var renderer = go.AddComponent<SpriteRenderer>();
             renderer.sortingLayerName = _sortingLayer;
-            // Em isométrico, quem está mais "abaixo" na tela (y menor) desenha por cima.
-            renderer.sortingOrder = -(instance.X + instance.Y);
+            renderer.sortingOrder = SortingOrderFor(instance.X, instance.Y);
             renderer.sprite = instance.CurrentLevel.Sprite;
             _views[instance.Id] = renderer;
 

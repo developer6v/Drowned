@@ -74,6 +74,14 @@ namespace Drowned.Tests
             Assert.IsNotNull(AudioManager.Instance, "AudioManager não está na cena");
             Assert.IsNotNull(Camera.main, "sem Main Camera");
 
+            // 2b. Estruturas e Monumento desenham na frente dos Tilemaps (bug: ficavam atrás do chão)
+            int maxTileOrder = int.MinValue;
+            foreach (var tr in Object.FindObjectsByType<UnityEngine.Tilemaps.TilemapRenderer>(FindObjectsSortMode.None))
+                maxTileOrder = Mathf.Max(maxTileOrder, tr.sortingOrder);
+            foreach (var sr in GameObject.Find("Structures").GetComponentsInChildren<SpriteRenderer>())
+                Assert.Greater(sr.sortingOrder, maxTileOrder, $"{sr.name} desenha atrás do chão");
+            Assert.Greater(GameObject.Find("Monument").GetComponent<SpriteRenderer>().sortingOrder, maxTileOrder, "Monumento desenha atrás do chão");
+
             // 3. Sprites (do Blender via planilha, ou procedurais do DemoContent)
             foreach (var s in game.Structures.Instances)
                 Assert.IsNotNull(s.CurrentLevel.Sprite, $"estrutura {s.Data.Id} nível {s.Level} sem sprite");
