@@ -82,13 +82,20 @@ namespace Drowned.World
             renderer.sortingOrder = SortingOrderFor(instance.X, instance.Y);
             renderer.sprite = instance.CurrentLevel.Sprite;
             _views[instance.Id] = renderer;
+            // Estruturas iniciais (colocadas no começo da partida) aparecem prontas; as construídas depois "montam"
+            go.AddComponent<StructureAnimator>().Init(instance.Data.Category, instance.Id, playBuild: Time.timeSinceLevelLoad > 0.5f);
 
             onStructureBuilt?.Invoke(instance);
         }
 
         private void HandleChanged(StructureInstance instance)
         {
-            if (_views.TryGetValue(instance.Id, out var renderer)) renderer.sprite = instance.CurrentLevel.Sprite;
+            if (_views.TryGetValue(instance.Id, out var renderer))
+            {
+                renderer.sprite = instance.CurrentLevel.Sprite;
+                var anim = renderer.GetComponent<StructureAnimator>();
+                if (anim != null) anim.PlayUpgrade();
+            }
             onStructureChanged?.Invoke(instance);
         }
 
