@@ -20,7 +20,7 @@ namespace Drowned.Core
 
             // ---------------------------------------------------------------- estruturas (SCRUM-143)
             var housing = StructureData.Create("housing", "Moradia", StructureCategory.Housing, 1, 1,
-                new StructureLevelData(new ResourceBundle(20f, 0f, 10f), ResourceBundle.Zero, new ResourceBundle(1f, 1f, 0f), 4, DemoArt.Building(DemoArt.Housing, 1, 36)),
+                new StructureLevelData(new ResourceBundle(20f, 0f, 10f), ResourceBundle.Zero, new ResourceBundle(1f, 1f, 0f), 6, DemoArt.Building(DemoArt.Housing, 1, 36)),
                 new StructureLevelData(new ResourceBundle(40f, 0f, 20f), ResourceBundle.Zero, new ResourceBundle(2f, 2f, 0f), 10, DemoArt.Building(DemoArt.Housing, 1, 56)));
             var farm = StructureData.Create("algae_farm", "Fazenda de algas", StructureCategory.Food, 2, 2,
                 new StructureLevelData(new ResourceBundle(30f, 10f, 0f), new ResourceBundle(0f, 0f, 12f), new ResourceBundle(3f, 0f, 0f), 0, DemoArt.Building(DemoArt.Food, 2, 24)),
