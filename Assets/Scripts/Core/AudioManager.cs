@@ -61,7 +61,9 @@ namespace Drowned.Core
         /// </summary>
         public void LoadPlaceholders()
         {
-            AudioClip Load(string name) => UnityEngine.Resources.Load<AudioClip>("Placeholder/" + name);
+            // Finais (SCRUM-158/159/172/173/186, tools/audio/make_final_sounds.py) primeiro; placeholder se faltar
+            AudioClip Load(string name) =>
+                UnityEngine.Resources.Load<AudioClip>("Final/" + name) ?? UnityEngine.Resources.Load<AudioClip>("Placeholder/" + name);
             _click = _click != null ? _click : Load("click");
             _buildConfirm = _buildConfirm != null ? _buildConfirm : Load("build_confirm");
             _error = _error != null ? _error : Load("error");
