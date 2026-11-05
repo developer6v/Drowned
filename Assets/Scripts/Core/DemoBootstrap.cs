@@ -67,6 +67,7 @@ namespace Drowned.Core
             cam.backgroundColor = new Color(0.02f, 0.07f, 0.14f);
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.transform.position = new Vector3(0f, 0f, -10f);
+            new GameObject("Background").AddComponent<UnderwaterBackground>().Configure(cam); // SCRUM-169
 
             // 2. Relógio
             var clockGo = new GameObject("GameClock");
@@ -117,6 +118,18 @@ namespace Drowned.Core
                 if (sr.sprite == null && rules.Monument != null) sr.sprite = rules.Monument.RuinSprite;
             }
 
+            // 7a. Habitantes andando entre as estruturas (SCRUM-126/139)
+            new GameObject("Inhabitants").AddComponent<InhabitantWalkers>().Configure(map);
+
+            // 7b. Decoração nas células não construíveis, longe do Monumento (SCRUM-183)
+            int dmx = _mapWidth / 2 - _monumentSize / 2, dmy = _mapHeight / 2 - _monumentSize / 2;
+            new GameObject("Decor").AddComponent<DecorScatterBehaviour>().Scatter(map, (x, y) =>
+                x >= dmx - 1 && x <= dmx + _monumentSize && y >= dmy - 1 && y <= dmy + _monumentSize);
+
+            // 7c. Domo de proteção sobre a área construível (SCRUM-168)
+            new GameObject("Dome").AddComponent<ProtectionDome>()
+                .Build(map, _border, _border, _mapWidth - _border - 1, _mapHeight - _border - 1);
+
             // 8. Interação, áudio e HUD
             var inputGo = new GameObject("BuildMode");
             inputGo.AddComponent<BuildModeController>();
@@ -131,7 +144,7 @@ namespace Drowned.Core
             var hudGo = new GameObject("HUD");
             hudGo.SetActive(false);
             var hud = hudGo.AddComponent<HudBuilder>();
-            hud.Configure(DemoContent.ResourceIcons()); // ícones finais: SCRUM-184
+            hud.Configure(GameIcons.ResourceIcons(DemoContent.ResourceIcons())); // SCRUM-184; bolinhas só se faltar PNG
             hudGo.SetActive(true);
         }
 
@@ -151,12 +164,16 @@ namespace Drowned.Core
             _created.Add(groundTile);
             _created.Add(buildTile);
 
+            // Chão do fundo do mar renderizado no Blender (SCRUM-167); sem sprites, usa o losango procedural
+            var seabed = LoadSeabedTiles();
+            var tileRng = new System.Random(1234);
+
             int mx0 = _mapWidth / 2 - _monumentSize / 2, my0 = _mapHeight / 2 - _monumentSize / 2;
             for (int x = 0; x < _mapWidth; x++)
                 for (int y = 0; y < _mapHeight; y++)
                 {
                     var cell = new Vector3Int(x, y, 0);
-                    ground.SetTile(cell, groundTile);
+                    ground.SetTile(cell, seabed.Count > 0 ? seabed[tileRng.Next(seabed.Count)] : groundTile);
                     bool inBorder = x < _border || y < _border || x >= _mapWidth - _border || y >= _mapHeight - _border;
                     bool inMonument = x >= mx0 && x < mx0 + _monumentSize && y >= my0 && y < my0 + _monumentSize;
                     if (!inBorder && !inMonument) buildable.SetTile(cell, buildTile);
@@ -166,6 +183,25 @@ namespace Drowned.Core
             map.Configure(ground, buildable);
             gridGo.SetActive(true); // Awake monta o GridMap
             return map;
+        }
+
+        /// <summary>Tiles de areia de <c>Resources/Terrain</c> (uma variação por direção de cada sheet).</summary>
+        private List<TileBase> LoadSeabedTiles()
+        {
+            var sprites = new List<Sprite>();
+            foreach (var sprite in UnityEngine.Resources.LoadAll<Sprite>("Terrain"))
+                if (sprite != null && sprite.name.EndsWith("_000")) sprites.Add(sprite);
+            sprites.Sort((a, b) => string.CompareOrdinal(a.name, b.name)); // ordem estável: mesmo mapa sempre
+            var tiles = new List<TileBase>(sprites.Count);
+            foreach (var sprite in sprites)
+            {
+                var tile = ScriptableObject.CreateInstance<Tile>();
+                tile.sprite = sprite;
+                tile.name = sprite.name;
+                _created.Add(tile);
+                tiles.Add(tile);
+            }
+            return tiles;
         }
 
         private static Tilemap NewTilemap(Transform parent, string name, int sortingOrder)
