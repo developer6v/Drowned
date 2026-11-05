@@ -1,5 +1,5 @@
 id;nome;categoria;largura;altura;requer_tecnologia;nivel_max_base;nivel;custo_energia;custo_oxigenio;custo_alimento;prod_energia;prod_oxigenio;prod_alimento;cons_energia;cons_oxigenio;cons_alimento;moradia;pesquisa_dia;sprite
-housing;Moradia;Housing;1;1;0;1;1;20;0;10;0;0;0;1;1;0;4;0;Structures/Housing_L1
+housing;Moradia;Housing;1;1;0;1;1;20;0;10;0;0;0;1;1;0;6;0;Structures/Housing_L1
 housing;Moradia;Housing;1;1;0;1;2;40;0;20;0;0;0;2;2;0;10;0;Structures/Housing_L2
 algae_farm;Fazenda de algas;Food;2;2;0;1;1;30;10;0;0;0;12;3;0;0;0;0;Structures/AlgaeFarm_L1
 algae_farm;Fazenda de algas;Food;2;2;0;1;2;60;20;0;0;0;28;5;0;0;0;0;Structures/AlgaeFarm_L2

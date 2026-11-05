@@ -32,7 +32,7 @@ MonoBehaviour:
       _energy: 1
       _oxygen: 1
       _food: 0
-    _housingCapacity: 4
+    _housingCapacity: 6
     _researchPerDay: 0
     _sprite: {fileID: -5922960135828474516, guid: 1af5eab7fdb37b94abe9ca2734a276bb, type: 3}
   - _cost:
