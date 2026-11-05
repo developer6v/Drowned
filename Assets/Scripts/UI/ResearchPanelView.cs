@@ -72,6 +72,9 @@ namespace Drowned.UI
                 UiKit.Stretch(rowH.GetComponent<RectTransform>());
                 UiKit.FitHeight(rowPanel);
 
+                var techIcon = GameIcons.Technology(t.Id);
+                if (techIcon != null) UiKit.Icon(rowH.transform, techIcon, 44f);
+
                 var textCol = UiKit.Vertical(rowH.transform, "Text", 2f, new RectOffset(0, 0, 0, 0));
                 UiKit.Size(textCol, flexibleWidth: 1f);
                 var title = UiKit.Label(textCol.transform, "", UiTheme.FontNormal, UiTheme.Text, TextAnchor.MiddleLeft, FontStyle.Bold);
