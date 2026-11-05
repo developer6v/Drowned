@@ -31,6 +31,7 @@ e o processo sai com codigo 1 se algo falhou.
 """
 
 import argparse
+import math
 import json
 import os
 import shutil
@@ -84,13 +85,110 @@ def load_manifest(path):
         item.update(raw)
         if "name" not in item or "category" not in item:
             raise ValueError(f"Item sem name/category: {raw}")
-        if not item.get("model") and not item.get("generator"):
-            raise ValueError(f"Item {item['name']} precisa de 'model' ou 'generator'")
+        if not item.get("model") and not item.get("generator") and not item.get("parts"):
+            raise ValueError(f"Item {item['name']} precisa de 'model', 'generator' ou 'parts'")
         items.append(item)
     return items
 
 
 def load_objects(item, manifest_dir):
+    """Carrega o item: uma peça só (model/generator) ou várias (parts). Depois aplica rotate/fit."""
+    if item.get("parts"):
+        objects = []
+        for i, part in enumerate(item["parts"]):
+            objects += place_part(load_single(part, manifest_dir), part, f"Part{i}")
+    else:
+        objects = load_single(item, manifest_dir)
+    return normalize(objects, item)
+
+
+def top_level(objects):
+    return [o for o in objects if o.parent is None or o.parent not in objects]
+
+
+def place_part(objects, part, name):
+    """
+    Agrupa a peça sob um Empty no centro da base dela e aplica scale e rotate (graus em Z) em torno desse ponto,
+    depois desloca por offset [x, y, z]. Assim escalar uma peça não a tira do lugar.
+    glassMaterials: nomes de material desta peça que viram vidro translúcido (ex.: ["dark"] no domo da Kenney).
+    """
+    if part.get("glassMaterials"):
+        render_sprites.glass_slots(objects, part["glassMaterials"])
+    b = mesh_bounds(objects)
+    cx, cy, cz = (((b[0][0] + b[1][0]) * 0.5, (b[0][1] + b[1][1]) * 0.5, b[0][2]) if b else (0.0, 0.0, 0.0))
+    empty = bpy.data.objects.new(name, None)
+    bpy.context.scene.collection.objects.link(empty)
+    empty.location = (cx, cy, cz)
+    bpy.context.view_layer.update()
+    inverse = empty.matrix_world.inverted()
+    for o in top_level(objects):
+        o.parent = empty
+        o.matrix_parent_inverse = inverse
+    off = part.get("offset", [0.0, 0.0, 0.0])
+    empty.location = (cx + float(off[0]), cy + float(off[1]), cz + float(off[2]))
+    empty.rotation_euler = (0.0, 0.0, math.radians(float(part.get("rotate", 0.0))))
+    sc = float(part.get("scale", 1.0))
+    empty.scale = (sc, sc, sc)
+    return objects + [empty]
+
+
+def mesh_bounds(objects):
+    bpy.context.view_layer.update()
+    from mathutils import Vector
+    lo = [float("inf")] * 3
+    hi = [float("-inf")] * 3
+    for o in objects:
+        if o.type != "MESH":
+            continue
+        for c in o.bound_box:
+            w = o.matrix_world @ Vector(c)
+            for k in range(3):
+                lo[k] = min(lo[k], w[k])
+                hi[k] = max(hi[k], w[k])
+    if lo[0] == float("inf"):
+        return None
+    return lo, hi
+
+
+def normalize(objects, item):
+    """
+    rotate: gira o item inteiro em Z (graus), para a frente do modelo apontar para -Y (convenção do README).
+    fit: [largura, profundidade] em células; escala para caber com folga e centraliza na origem, base em Z = 0.
+    fitHeight: altura em unidades (para personagens); usado se não houver fit.
+    scale + anchor: escala fixa e ponto [x, y] (nas coordenadas do modelo) que vai para a origem; para itens que
+    precisam da mesma escala entre si (etapas do Monumento), em vez de cada um ser esticado até a pegada.
+    """
+    if not any(item.get(k) for k in ("rotate", "fit", "fitHeight", "scale")):
+        return objects
+    root = bpy.data.objects.new("ItemRoot", None)
+    bpy.context.scene.collection.objects.link(root)
+    for o in top_level(objects):
+        o.parent = root
+    root.rotation_euler = (0.0, 0.0, math.radians(float(item.get("rotate", 0.0))))
+    bounds = mesh_bounds(objects)
+    if bounds is None:
+        return objects + [root]
+    lo, hi = bounds
+    s = 1.0
+    if item.get("fit"):
+        fw, fd = float(item["fit"][0]), float(item["fit"][1])
+        margin = float(item.get("fitMargin", 0.9))
+        s = min(fw * margin / max(hi[0] - lo[0], 1e-6), fd * margin / max(hi[1] - lo[1], 1e-6))
+        if item.get("maxHeight"):
+            s = min(s, float(item["maxHeight"]) / max(hi[2] - lo[2], 1e-6))
+    elif item.get("fitHeight"):
+        s = float(item["fitHeight"]) / max(hi[2] - lo[2], 1e-6)
+    elif item.get("scale"):
+        s = float(item["scale"])
+    cx, cy = (lo[0] + hi[0]) * 0.5, (lo[1] + hi[1]) * 0.5
+    if item.get("anchor"):
+        cx, cy = float(item["anchor"][0]), float(item["anchor"][1])
+    root.scale = (s, s, s)
+    root.location = (-cx * s, -cy * s, -lo[2] * s)
+    return objects + [root]
+
+
+def load_single(item, manifest_dir):
     if item.get("generator"):
         kind, _, gen_id = item["generator"].partition(":")
         if kind != "placeholder":

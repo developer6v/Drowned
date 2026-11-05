@@ -69,6 +69,29 @@ PPU 128, sem compressão, fatiado em grade, pivô do `.json`, sprites nomeados
 `<Nome>_<Dir>_<frame>` (ex.: `Housing_L1_S_000`). Para reimportar depois de rodar o lote de
 novo, basta o Unity ganhar foco (ou Assets → Reimport na pasta).
 
+### Modelos prontos (Kenney, CC0)
+
+As estruturas, o habitante, o Monumento e a decoração usam modelos dos kits **Space Kit** e **Nature Kit**
+da [Kenney](https://kenney.nl), licença **CC0** (domínio público; crédito não obrigatório, mas registrado aqui).
+Os arquivos usados ficam em `tools/blender/modelos/kenney/{space,nature}/` com as licenças ao lado
+(`LICENSE-space-kit.txt`, `LICENSE-nature-kit.txt`). Para trocar um modelo, mude o caminho no manifesto e rode o lote.
+
+Opções do manifesto para montar um item a partir de modelos prontos:
+
+| Campo | Onde | O que faz |
+|---|---|---|
+| `parts` | item | lista de peças; cada uma tem `model` (ou `generator`) e opcionais abaixo |
+| `offset` | peça | desloca a peça `[x, y, z]` em unidades do modelo |
+| `scale`, `rotate` | peça | escala e giro em Z (graus), em torno do centro da base da própria peça |
+| `glassMaterials` | peça | materiais desta peça que viram vidro translúcido (ex.: `["dark"]`) |
+| `fit` | item | `[largura, profundidade]` em células: escala o item para caber na pegada, centra e apoia em Z = 0 |
+| `fitMargin`, `maxHeight` | item | folga do `fit` (padrão 0.9) e altura máxima em unidades |
+| `fitHeight` | item | altura final em unidades (personagens) |
+| `scale` + `anchor` | item | escala fixa e ponto `[x, y]` que vai para a origem; usado no Monumento para as 5 etapas terem a mesma base |
+| `rotate` | item | gira o item inteiro em Z, para a frente apontar para -Y |
+
+Decorações vão para `category: "Decor/Resources/Decor"`, porque o jogo as carrega com `Resources.LoadAll`.
+
 ### Modelos placeholder
 
 Enquanto a arte final (SCRUM-126, 135–138, 151, 164, 165) não existe, `placeholder_models.py`

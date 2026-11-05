@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 73a756da5fdf1104e90f08a089f558cd
+guid: 91613dbb88d9d4246b2812d88b7ea841
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -48,7 +48,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 128
+  spritePixelsToUnits: 113
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -71,7 +71,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 512
+    maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -112,13 +112,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Inhabitant_S_000
+      name: Wreck_A_S_000
       rect:
         serializedVersion: 2
         x: 0
-        y: 384
-        width: 128
-        height: 128
+        y: 768
+        width: 256
+        height: 256
       alignment: 9
       pivot: {x: 0.5, y: 0.25}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -127,20 +127,42 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cada22caf465055d0800000000000000
-      internalID: -3075863645303689812
+      spriteID: acc808d7f51604620800000000000000
+      internalID: 2756310034706107594
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Inhabitant_W_000
+      name: Wreck_A_W_000
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 512
+        width: 256
+        height: 256
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d61dff9f907f07200800000000000000
+      internalID: 175912007688507757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wreck_A_N_000
       rect:
         serializedVersion: 2
         x: 0
         y: 256
-        width: 128
-        height: 128
+        width: 256
+        height: 256
       alignment: 9
       pivot: {x: 0.5, y: 0.25}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -149,42 +171,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c4243ea18e3c21100800000000000000
-      internalID: 77339545269649996
+      spriteID: 1dab2ae1abf8055b0800000000000000
+      internalID: -5381643525167072559
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Inhabitant_N_000
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 128
-        width: 128
-        height: 128
-      alignment: 9
-      pivot: {x: 0.5, y: 0.25}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 357446a6c224ee330800000000000000
-      internalID: 3742001098922411859
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Inhabitant_E_000
+      name: Wreck_A_E_000
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 128
-        height: 128
+        width: 256
+        height: 256
       alignment: 9
       pivot: {x: 0.5, y: 0.25}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -193,8 +193,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 75ef3e38586f527d0800000000000000
-      internalID: -2943675728112910761
+      spriteID: 9aaacae215b07c7f0800000000000000
+      internalID: -592492382672606551
       vertices: []
       indices: 
       edges: []
@@ -213,10 +213,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Inhabitant_E_000: -2943675728112910761
-      Inhabitant_N_000: 3742001098922411859
-      Inhabitant_S_000: -3075863645303689812
-      Inhabitant_W_000: 77339545269649996
+      Wreck_A_E_000: -592492382672606551
+      Wreck_A_N_000: -5381643525167072559
+      Wreck_A_S_000: 2756310034706107594
+      Wreck_A_W_000: 175912007688507757
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

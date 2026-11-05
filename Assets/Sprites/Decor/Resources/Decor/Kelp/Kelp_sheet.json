@@ -1,8 +1,8 @@
 {
-  "name": "Inhabitant",
+  "name": "Kelp",
   "frameSize": [
-    128,
-    128
+    256,
+    256
   ],
   "directions": 4,
   "directionOrder": [
@@ -17,5 +17,5 @@
     0.5,
     0.25
   ],
-  "pixelsPerUnit": 139
+  "pixelsPerUnit": 113
 }

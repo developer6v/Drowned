@@ -232,7 +232,63 @@ def monument_stage4():  # Acabamento
     return parts
 
 
+# ---------------------------------------------------------------------------
+# Chão do fundo do mar (SCRUM-167): tile 1x1 de areia com pedrinhas e conchas
+# ---------------------------------------------------------------------------
+def _sand_material(seed):
+    mat = bpy.data.materials.new(f"Sand{seed}")
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes.get("Principled BSDF")
+    noise = nt.nodes.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = 14.0 + seed * 3.0
+    noise.inputs["Detail"].default_value = 6.0
+    if "W" in noise.inputs:
+        noise.noise_dimensions = "4D"
+        noise.inputs["W"].default_value = seed * 1.7
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.35
+    # areia molhada vista através da água: escura, puxando para o azul-esverdeado; cada variação um pouco diferente
+    k = 1.0 + (seed - 2) * 0.06
+    ramp.color_ramp.elements[0].color = (0.15 * k, 0.22 * k, 0.26 * k, 1.0)
+    ramp.color_ramp.elements[1].position = 0.75
+    ramp.color_ramp.elements[1].color = (0.26 * k, 0.33 * k, 0.34 * k, 1.0)
+    nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    if bsdf:
+        nt.links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+        bsdf.inputs["Roughness"].default_value = 0.95
+    return mat
+
+
+def seabed(seed, pebbles, shells):
+    import random
+    rnd = random.Random(seed)
+    # 1.02 de lado: cobre a célula com folga para os tiles vizinhos se sobreporem sem fresta
+    bpy.ops.mesh.primitive_plane_add(size=1.02, location=(0.0, 0.0, 0.0))
+    ground = bpy.context.active_object
+    ground.name = f"Seabed{seed}"
+    ground.data.materials.append(_sand_material(seed))
+    parts = [ground]
+    stone_colors = [(0.20, 0.24, 0.28), (0.16, 0.20, 0.24), (0.26, 0.28, 0.30)]
+    for i in range(pebbles):
+        r = rnd.uniform(0.015, 0.04)
+        x, y = rnd.uniform(-0.42, 0.42), rnd.uniform(-0.42, 0.42)
+        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=r, location=(x, y, r * 0.3))
+        o = bpy.context.active_object
+        o.scale = (1.0, rnd.uniform(0.7, 1.0), 0.45)
+        parts.append(_finish(o, f"Pebble{i}", rnd.choice(stone_colors)))
+    for i in range(shells):
+        r = rnd.uniform(0.02, 0.035)
+        x, y = rnd.uniform(-0.38, 0.38), rnd.uniform(-0.38, 0.38)
+        bpy.ops.mesh.primitive_cone_add(vertices=8, radius1=r, radius2=0.0, depth=r * 0.8, location=(x, y, r * 0.4))
+        parts.append(_finish(bpy.context.active_object, f"Shell{i}", (0.62, 0.55, 0.50), roughness=0.5))
+    return parts
+
+
 GENERATORS = {
+    "seabed_a": lambda: seabed(1, pebbles=3, shells=0),
+    "seabed_b": lambda: seabed(2, pebbles=6, shells=1),
+    "seabed_c": lambda: seabed(3, pebbles=1, shells=2),
     "housing_1": housing_1,
     "housing_2": housing_2,
     "algae_farm_1": lambda: algae_farm(1),

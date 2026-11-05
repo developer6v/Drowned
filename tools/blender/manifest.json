@@ -1,5 +1,5 @@
 {
-  "_comment": "Lista de modelos do Drowned para tools/blender/render_batch.py. Troque 'generator' por 'model' quando a arte final existir. orthoScale igual para todas as estruturas mantem a proporcao entre elas no grid.",
+  "_comment": "Modelos do Drowned para tools/blender/render_batch.py. Estruturas, habitante, Monumento e decoração vêm dos kits CC0 da Kenney em modelos/kenney (ver LICENSE-*.txt). orthoScale igual por categoria mantém a proporção entre itens. 'fit' encaixa o modelo na pegada em células; o Monumento usa 'scale' fixo para as etapas terem a mesma base. Para voltar ao placeholder de primitivas, troque 'parts'/'model' por 'generator': 'placeholder:<id>'.",
   "defaults": {
     "size": 256,
     "directions": 4,
@@ -9,29 +9,826 @@
     "samples": 32
   },
   "items": [
-    { "name": "Housing_L1",     "category": "Structures", "generator": "placeholder:housing_1" },
-    { "name": "Housing_L2",     "category": "Structures", "generator": "placeholder:housing_2" },
-    { "name": "AlgaeFarm_L1",   "category": "Structures", "generator": "placeholder:algae_farm_1" },
-    { "name": "AlgaeFarm_L2",   "category": "Structures", "generator": "placeholder:algae_farm_2" },
-    { "name": "Generator_L1",   "category": "Structures", "generator": "placeholder:generator_1" },
-    { "name": "Generator_L2",   "category": "Structures", "generator": "placeholder:generator_2" },
-    { "name": "OxygenPlant_L1", "category": "Structures", "generator": "placeholder:oxygen_plant_1" },
-    { "name": "OxygenPlant_L2", "category": "Structures", "generator": "placeholder:oxygen_plant_2" },
-    { "name": "Lab_L1",         "category": "Structures", "generator": "placeholder:lab_1" },
-    { "name": "Lab_L2",         "category": "Structures", "generator": "placeholder:lab_2" },
-
-    { "name": "Inhabitant",     "category": "Characters", "generator": "placeholder:inhabitant",
-      "size": 128, "orthoScale": 1.3 },
-
-    { "name": "Monument_Ruin",  "category": "Monument", "generator": "placeholder:monument_ruin",
-      "size": 512, "orthoScale": 7.0 },
-    { "name": "Monument_S1",    "category": "Monument", "generator": "placeholder:monument_1",
-      "size": 512, "orthoScale": 7.0 },
-    { "name": "Monument_S2",    "category": "Monument", "generator": "placeholder:monument_2",
-      "size": 512, "orthoScale": 7.0 },
-    { "name": "Monument_S3",    "category": "Monument", "generator": "placeholder:monument_3",
-      "size": 512, "orthoScale": 7.0 },
-    { "name": "Monument_S4",    "category": "Monument", "generator": "placeholder:monument_4",
-      "size": 512, "orthoScale": 7.0 }
+    {
+      "name": "Housing_L1",
+      "category": "Structures",
+      "fit": [
+        1,
+        1
+      ],
+      "maxHeight": 1.2,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/hangar_smallA.glb"
+        }
+      ]
+    },
+    {
+      "name": "Housing_L2",
+      "category": "Structures",
+      "fit": [
+        1,
+        1
+      ],
+      "maxHeight": 1.4,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/hangar_smallA.glb"
+        },
+        {
+          "model": "modelos/kenney/space/structure_closed.glb",
+          "offset": [
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AlgaeFarm_L1",
+      "category": "Structures",
+      "fit": [
+        2,
+        2
+      ],
+      "maxHeight": 1.0,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/platform_large.glb"
+        },
+        {
+          "model": "modelos/kenney/nature/crops_leafsStageB.glb",
+          "offset": [
+            1.45,
+            -1.775,
+            0.1
+          ],
+          "scale": 1.5
+        },
+        {
+          "model": "modelos/kenney/nature/plant_flatTall.glb",
+          "offset": [
+            2.0,
+            -1.775,
+            0.1
+          ],
+          "scale": 1.5
+        },
+        {
+          "model": "modelos/kenney/nature/crops_leafsStageB.glb",
+          "offset": [
+            2.55,
+            -1.775,
+            0.1
+          ],
+          "scale": 1.5
+        },
+        {
+          "model": "modelos/kenney/nature/plant_flatTall.glb",
+          "offset": [
+            1.45,
+            -1.225,
+            0.1
+          ],
+          "scale": 1.5
+        },
+        {
+          "model": "modelos/kenney/nature/crops_leafsStageB.glb",
+          "offset": [
+            2.0,
+            -1.225,
+            0.1
+          ],
+          "scale": 1.5
+        },
+        {
+          "model": "modelos/kenney/nature/plant_flatTall.glb",
+          "offset": [
+            2.55,
+            -1.225,
+            0.1
+          ],
+          "scale": 1.5
+        }
+      ]
+    },
+    {
+      "name": "AlgaeFarm_L2",
+      "category": "Structures",
+      "fit": [
+        2,
+        2
+      ],
+      "maxHeight": 1.1,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/platform_large.glb"
+        },
+        {
+          "model": "modelos/kenney/nature/crops_leafsStageB.glb",
+          "offset": [
+            1.5,
+            -2.0,
+            0.1
+          ],
+          "scale": 1.5
+        },
+        {
+          "model": "modelos/kenney/nature/plant_flatTall.glb",
+          "offset": [
+            2.0,
+            -2.0,
+            0.1
+          ],
+          "scale": 1.5
+        },
+        {
+          "model": "modelos/kenney/nature/crops_leafsStageB.glb",
+          "offset": [
+            2.5,
+            -2.0,
+            0.1
+          ],
+          "scale": 1.5
+        },
+        {
+          "model": "modelos/kenney/nature/crops_leafsStageB.glb",
+          "offset": [
+            1.5,
+            -1.5,
+            0.1
+          ],
+          "scale": 1.5
+        },
+        {
+          "model": "modelos/kenney/nature/plant_flatTall.glb",
+          "offset": [
+            2.0,
+            -1.5,
+            0.1
+          ],
+          "scale": 1.5
+        },
+        {
+          "model": "modelos/kenney/nature/crops_leafsStageB.glb",
+          "offset": [
+            2.5,
+            -1.5,
+            0.1
+          ],
+          "scale": 1.5
+        },
+        {
+          "model": "modelos/kenney/nature/crops_leafsStageB.glb",
+          "offset": [
+            1.5,
+            -1.0,
+            0.1
+          ],
+          "scale": 1.5
+        },
+        {
+          "model": "modelos/kenney/nature/plant_flatTall.glb",
+          "offset": [
+            2.0,
+            -1.0,
+            0.1
+          ],
+          "scale": 1.5
+        },
+        {
+          "model": "modelos/kenney/nature/crops_leafsStageB.glb",
+          "offset": [
+            2.5,
+            -1.0,
+            0.1
+          ],
+          "scale": 1.5
+        },
+        {
+          "model": "modelos/kenney/space/machine_barrel.glb",
+          "offset": [
+            0.75,
+            0.7,
+            0.1
+          ],
+          "scale": 0.7
+        }
+      ]
+    },
+    {
+      "name": "Generator_L1",
+      "category": "Structures",
+      "fit": [
+        1,
+        1
+      ],
+      "maxHeight": 1.0,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/machine_generator.glb"
+        }
+      ]
+    },
+    {
+      "name": "Generator_L2",
+      "category": "Structures",
+      "fit": [
+        1,
+        1
+      ],
+      "maxHeight": 1.2,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/machine_generatorLarge.glb"
+        }
+      ]
+    },
+    {
+      "name": "OxygenPlant_L1",
+      "category": "Structures",
+      "fit": [
+        1,
+        1
+      ],
+      "maxHeight": 1.2,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/machine_barrel.glb"
+        }
+      ]
+    },
+    {
+      "name": "OxygenPlant_L2",
+      "category": "Structures",
+      "fit": [
+        1,
+        1
+      ],
+      "maxHeight": 1.3,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/machine_barrelLarge.glb"
+        },
+        {
+          "model": "modelos/kenney/space/machine_barrel.glb",
+          "offset": [
+            0.55,
+            0.45,
+            0
+          ],
+          "scale": 0.8
+        }
+      ]
+    },
+    {
+      "name": "Lab_L1",
+      "category": "Structures",
+      "fit": [
+        2,
+        2
+      ],
+      "maxHeight": 1.6,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/structure_detailed.glb"
+        },
+        {
+          "model": "modelos/kenney/space/satelliteDish.glb",
+          "offset": [
+            0,
+            0,
+            1
+          ],
+          "scale": 0.8
+        }
+      ]
+    },
+    {
+      "name": "Lab_L2",
+      "category": "Structures",
+      "fit": [
+        2,
+        2
+      ],
+      "maxHeight": 1.7,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/structure_detailed.glb"
+        },
+        {
+          "model": "modelos/kenney/space/structure_closed.glb",
+          "offset": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "model": "modelos/kenney/space/satelliteDish_large.glb",
+          "offset": [
+            0,
+            0,
+            1
+          ],
+          "scale": 0.8
+        },
+        {
+          "model": "modelos/kenney/space/machine_wireless.glb",
+          "offset": [
+            1,
+            0,
+            1
+          ],
+          "scale": 0.8
+        }
+      ]
+    },
+    {
+      "name": "Inhabitant",
+      "category": "Characters/Resources/Characters",
+      "fitHeight": 0.35,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/astronautA.glb"
+        }
+      ],
+      "size": 128,
+      "orthoScale": 0.7
+    },
+    {
+      "name": "Monument_Ruin",
+      "category": "Monument",
+      "scale": 1.9,
+      "anchor": [
+        2.0,
+        -1.5
+      ],
+      "parts": [
+        {
+          "model": "modelos/kenney/space/rock_largeA.glb",
+          "offset": [
+            -0.5,
+            0.4,
+            0
+          ]
+        },
+        {
+          "model": "modelos/kenney/space/rock_largeB.glb",
+          "offset": [
+            0.55,
+            -0.35,
+            0
+          ],
+          "rotate": 40
+        },
+        {
+          "model": "modelos/kenney/space/meteor_half.glb",
+          "offset": [
+            0.2,
+            0.65,
+            0
+          ]
+        },
+        {
+          "model": "modelos/kenney/space/supports_low.glb",
+          "offset": [
+            -0.35,
+            -0.5,
+            0
+          ],
+          "rotate": 20
+        },
+        {
+          "model": "modelos/kenney/space/pipe_straight.glb",
+          "offset": [
+            0.6,
+            0.5,
+            0
+          ],
+          "rotate": 70
+        }
+      ],
+      "size": 512,
+      "orthoScale": 7.0
+    },
+    {
+      "name": "Monument_S1",
+      "category": "Monument",
+      "scale": 1.9,
+      "anchor": [
+        2.0,
+        -1.5
+      ],
+      "parts": [
+        {
+          "model": "modelos/kenney/space/platform_large.glb"
+        },
+        {
+          "model": "modelos/kenney/space/supports_low.glb",
+          "offset": [
+            -0.6,
+            -0.6,
+            0.1
+          ]
+        },
+        {
+          "model": "modelos/kenney/space/supports_low.glb",
+          "offset": [
+            0.6,
+            -0.6,
+            0.1
+          ]
+        },
+        {
+          "model": "modelos/kenney/space/supports_low.glb",
+          "offset": [
+            -0.6,
+            0.6,
+            0.1
+          ]
+        },
+        {
+          "model": "modelos/kenney/space/supports_low.glb",
+          "offset": [
+            0.6,
+            0.6,
+            0.1
+          ]
+        }
+      ],
+      "size": 512,
+      "orthoScale": 7.0
+    },
+    {
+      "name": "Monument_S2",
+      "category": "Monument",
+      "scale": 1.9,
+      "anchor": [
+        2.0,
+        -1.5
+      ],
+      "parts": [
+        {
+          "model": "modelos/kenney/space/platform_large.glb"
+        },
+        {
+          "model": "modelos/kenney/space/supports_high.glb",
+          "offset": [
+            -0.6,
+            -0.6,
+            0.1
+          ]
+        },
+        {
+          "model": "modelos/kenney/space/supports_high.glb",
+          "offset": [
+            0.6,
+            -0.6,
+            0.1
+          ]
+        },
+        {
+          "model": "modelos/kenney/space/supports_high.glb",
+          "offset": [
+            -0.6,
+            0.6,
+            0.1
+          ]
+        },
+        {
+          "model": "modelos/kenney/space/supports_high.glb",
+          "offset": [
+            0.6,
+            0.6,
+            0.1
+          ]
+        }
+      ],
+      "size": 512,
+      "orthoScale": 7.0
+    },
+    {
+      "name": "Monument_S3",
+      "category": "Monument",
+      "scale": 1.9,
+      "anchor": [
+        2.0,
+        -1.5
+      ],
+      "parts": [
+        {
+          "model": "modelos/kenney/space/platform_large.glb"
+        },
+        {
+          "model": "modelos/kenney/space/supports_high.glb",
+          "offset": [
+            -0.6,
+            -0.6,
+            0.1
+          ]
+        },
+        {
+          "model": "modelos/kenney/space/supports_high.glb",
+          "offset": [
+            0.6,
+            -0.6,
+            0.1
+          ]
+        },
+        {
+          "model": "modelos/kenney/space/supports_high.glb",
+          "offset": [
+            -0.6,
+            0.6,
+            0.1
+          ]
+        },
+        {
+          "model": "modelos/kenney/space/supports_high.glb",
+          "offset": [
+            0.6,
+            0.6,
+            0.1
+          ]
+        },
+        {
+          "model": "modelos/kenney/space/structure_detailed.glb",
+          "offset": [
+            0,
+            0,
+            0.1
+          ]
+        },
+        {
+          "model": "modelos/kenney/space/machine_wireless.glb",
+          "offset": [
+            0,
+            0,
+            1.1
+          ],
+          "scale": 0.9
+        }
+      ],
+      "size": 512,
+      "orthoScale": 7.0
+    },
+    {
+      "name": "Monument_S4",
+      "category": "Monument",
+      "scale": 1.9,
+      "anchor": [
+        2.0,
+        -1.5
+      ],
+      "parts": [
+        {
+          "model": "modelos/kenney/space/platform_large.glb"
+        },
+        {
+          "model": "modelos/kenney/space/hangar_roundA.glb",
+          "offset": [
+            0,
+            0.05,
+            0.1
+          ],
+          "scale": 0.6
+        },
+        {
+          "model": "modelos/kenney/space/satelliteDish_large.glb",
+          "offset": [
+            0.7,
+            -0.6,
+            0.1
+          ]
+        },
+        {
+          "model": "modelos/kenney/space/machine_wireless.glb",
+          "offset": [
+            -0.7,
+            -0.6,
+            0.1
+          ]
+        },
+        {
+          "model": "modelos/kenney/space/structure_closed.glb",
+          "offset": [
+            -0.65,
+            0.6,
+            0.1
+          ],
+          "scale": 0.7
+        }
+      ],
+      "size": 512,
+      "orthoScale": 7.0
+    },
+    {
+      "name": "Coral_A",
+      "category": "Decor/Resources/Decor",
+      "fit": [
+        1,
+        1
+      ],
+      "fitMargin": 0.8,
+      "maxHeight": 0.9,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/rock_crystalsLargeA.glb"
+        }
+      ]
+    },
+    {
+      "name": "Coral_B",
+      "category": "Decor/Resources/Decor",
+      "fit": [
+        1,
+        1
+      ],
+      "fitMargin": 0.7,
+      "maxHeight": 0.7,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/rock_crystals.glb"
+        }
+      ]
+    },
+    {
+      "name": "Coral_C",
+      "category": "Decor/Resources/Decor",
+      "fit": [
+        1,
+        1
+      ],
+      "fitMargin": 0.6,
+      "maxHeight": 0.6,
+      "parts": [
+        {
+          "model": "modelos/kenney/nature/mushroom_redGroup.glb"
+        }
+      ]
+    },
+    {
+      "name": "Rock_A",
+      "category": "Decor/Resources/Decor",
+      "fit": [
+        1,
+        1
+      ],
+      "fitMargin": 0.85,
+      "maxHeight": 0.6,
+      "parts": [
+        {
+          "model": "modelos/kenney/nature/rock_largeC.glb"
+        }
+      ]
+    },
+    {
+      "name": "Rock_B",
+      "category": "Decor/Resources/Decor",
+      "fit": [
+        1,
+        1
+      ],
+      "fitMargin": 0.6,
+      "maxHeight": 1.0,
+      "parts": [
+        {
+          "model": "modelos/kenney/nature/rock_tallB.glb"
+        }
+      ]
+    },
+    {
+      "name": "Rock_C",
+      "category": "Decor/Resources/Decor",
+      "fit": [
+        1,
+        1
+      ],
+      "fitMargin": 0.8,
+      "maxHeight": 0.6,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/rock_largeB.glb"
+        }
+      ]
+    },
+    {
+      "name": "Seaweed_A",
+      "category": "Decor/Resources/Decor",
+      "fit": [
+        1,
+        1
+      ],
+      "fitMargin": 0.5,
+      "maxHeight": 0.9,
+      "parts": [
+        {
+          "model": "modelos/kenney/nature/plant_flatTall.glb"
+        }
+      ]
+    },
+    {
+      "name": "Seaweed_B",
+      "category": "Decor/Resources/Decor",
+      "fit": [
+        1,
+        1
+      ],
+      "fitMargin": 0.6,
+      "maxHeight": 0.5,
+      "parts": [
+        {
+          "model": "modelos/kenney/nature/grass_large.glb"
+        }
+      ]
+    },
+    {
+      "name": "Kelp",
+      "category": "Decor/Resources/Decor",
+      "fit": [
+        1,
+        1
+      ],
+      "fitMargin": 0.45,
+      "maxHeight": 1.1,
+      "parts": [
+        {
+          "model": "modelos/kenney/nature/crops_leafsStageB.glb"
+        }
+      ]
+    },
+    {
+      "name": "Wreck_A",
+      "category": "Decor/Resources/Decor",
+      "fit": [
+        1,
+        1
+      ],
+      "fitMargin": 0.95,
+      "maxHeight": 0.5,
+      "rotate": 25,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/craft_cargoA.glb"
+        }
+      ]
+    },
+    {
+      "name": "Wreck_B",
+      "category": "Decor/Resources/Decor",
+      "fit": [
+        1,
+        1
+      ],
+      "fitMargin": 0.7,
+      "maxHeight": 0.5,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/barrels.glb"
+        }
+      ]
+    },
+    {
+      "name": "Wreck_C",
+      "category": "Decor/Resources/Decor",
+      "fit": [
+        1,
+        1
+      ],
+      "fitMargin": 0.7,
+      "maxHeight": 0.9,
+      "rotate": 15,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/pipe_ringHigh.glb"
+        }
+      ]
+    },
+    {
+      "name": "Seabed_A",
+      "category": "Terrain/Resources/Terrain",
+      "generator": "placeholder:seabed_a",
+      "size": 256,
+      "orthoScale": 1.6,
+      "groundAnchor": 0.5
+    },
+    {
+      "name": "Seabed_B",
+      "category": "Terrain/Resources/Terrain",
+      "generator": "placeholder:seabed_b",
+      "size": 256,
+      "orthoScale": 1.6,
+      "groundAnchor": 0.5
+    },
+    {
+      "name": "Seabed_C",
+      "category": "Terrain/Resources/Terrain",
+      "generator": "placeholder:seabed_c",
+      "size": 256,
+      "orthoScale": 1.6,
+      "groundAnchor": 0.5
+    }
   ]
 }
