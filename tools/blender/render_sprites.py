@@ -192,7 +192,66 @@ def import_model(path):
             keep.append(o)
     if not keep:
         raise SystemExit("Nenhum objeto importado.")
+    fix_glass(keep)
     return keep
+
+
+GLASS_COLOR = (0.55, 0.82, 1.0, 1.0)
+GLASS_ALPHA = 0.45
+
+
+def fix_glass(objects):
+    """
+    Materiais de vidro de GLB (ex.: domos da Kenney) chegam opacos e cinza no Blender. Qualquer material com
+    'glass' no nome vira vidro azul translúcido, para a cúpula da fazenda e do Monumento parecer cúpula.
+    """
+    seen = set()
+    for o in objects:
+        if o.type != "MESH":
+            continue
+        for slot in o.material_slots:
+            mat = slot.material
+            if mat is None or mat.name in seen or "glass" not in mat.name.lower():
+                continue
+            seen.add(mat.name)
+            make_glass(mat)
+
+
+def make_glass(mat):
+    """Transforma o material em vidro azul translúcido (EEVEE)."""
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes.get("Principled BSDF")
+    if bsdf is None:
+        return
+    bsdf.inputs["Base Color"].default_value = GLASS_COLOR
+    bsdf.inputs["Roughness"].default_value = 0.08
+    bsdf.inputs["Alpha"].default_value = GLASS_ALPHA
+    if hasattr(mat, "surface_render_method"):
+        mat.surface_render_method = "BLENDED"
+    elif hasattr(mat, "blend_method"):
+        mat.blend_method = "BLEND"
+    if hasattr(mat, "use_backface_culling"):
+        mat.use_backface_culling = False
+
+
+def glass_slots(objects, names):
+    """Nos objetos dados, troca os materiais cujo nome (sem sufixo .001) está em names por uma cópia em vidro."""
+    wanted = {n.lower() for n in names}
+    copies = {}
+    for o in objects:
+        if o.type != "MESH":
+            continue
+        for slot in o.material_slots:
+            mat = slot.material
+            if mat is None or mat.name.split(".")[0].lower() not in wanted:
+                continue
+            if mat.name not in copies:
+                glass = mat.copy()
+                glass.name = mat.name.split(".")[0] + "_glass"
+                make_glass(glass)
+                copies[mat.name] = glass
+            slot.link = "OBJECT"
+            slot.material = copies[mat.name]
 
 
 def group_under_pivot(objects):
