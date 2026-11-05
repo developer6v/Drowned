@@ -64,6 +64,14 @@ Duas cenas em `Assets/Scenes`, cada uma com um único objeto que monta o resto p
 
 Abra qualquer uma e dê Play. No editor, "Jogar" carrega `Game.unity` pelo caminho mesmo sem Build Settings. Para a build Windows, adicione as duas nas Build Settings (MainMenu primeiro). Se precisar recriar as cenas: **Drowned → Criar cenas (MainMenu + Game)**.
 
+**Build Windows (SCRUM-194):** menu **Drowned → Build Windows**, ou em batch:
+
+```
+"<caminho do Unity>/Unity.exe" -batchmode -quit -projectPath . -executeMethod Drowned.Editor.BuildScript.BuildWindows -logFile build.log
+```
+
+Gera `Builds/Windows/Drowned.exe` e `Builds/Drowned-Windows.zip` com MainMenu e Game, sem precisar mexer nas Build Settings.
+
 Controles: WASD/setas ou arrastar com o botão direito movem a câmera, roda do mouse dá zoom, Espaço pausa, 1/2/3 mudam a velocidade, Esc abre o menu de pausa, F5 salva. Clique em uma estrutura da barra inferior e depois no mapa para construir; clique em uma estrutura construída para melhorar ou remover.
 
 Se `Assets/Data/Resources/GameRules.asset` não existir, o `DemoBootstrap` cai nos números em memória (`DemoContent`) e avisa no Console; rode **Drowned → Gerar dados da planilha** para gerá-lo a partir de `docs/balanceamento`.
@@ -91,3 +99,9 @@ Se `Assets/Data/Resources/GameRules.asset` não existir, o `DemoBootstrap` cai n
 ## Equipe
 
 Diogo Salgado, Luis Filipi, Otávio de Oliveira. IA: Claude Code, com as convenções em [`CLAUDE.md`](CLAUDE.md).
+
+## Créditos
+
+- Modelos 3D de estruturas, habitante, Monumento e decoração: **Space Kit** e **Nature Kit** da [Kenney](https://kenney.nl), licença CC0. Arquivos e licenças em `tools/blender/modelos/kenney/`.
+- Efeitos sonoros: **Interface Sounds**, **Impact Sounds** e **Music Jingles** da [Kenney](https://kenney.nl), licença CC0. Licenças em `tools/audio/kenney/`; escolha e cópia por `tools/audio/make_final_sounds.py`.
+- Ícones, fundo, ambiente sonoro, alarme de crise e UI: gerados por código neste repositório.
