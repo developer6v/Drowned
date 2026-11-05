@@ -238,6 +238,26 @@ namespace Drowned.UI
 
         public static Text ButtonText(Button btn) => btn.GetComponentInChildren<Text>();
 
+        /// <summary>
+        /// Põe um ícone à esquerda dentro do botão e empurra o texto para a direita (SCRUM-184).
+        /// Sem ícone (null) não faz nada, então dá para chamar sempre.
+        /// </summary>
+        public static Image AddButtonIcon(Button btn, Sprite icon, float size)
+        {
+            if (btn == null || icon == null) return null;
+            var img = Icon(btn.transform, icon, size);
+            img.GetComponent<LayoutElement>().ignoreLayout = true;
+            Anchor(img.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
+                new Vector2(8f, 0f), new Vector2(size, size));
+            var label = ButtonText(btn);
+            if (label != null)
+            {
+                label.rectTransform.offsetMin = new Vector2(size + 14f, label.rectTransform.offsetMin.y);
+                label.alignment = TextAnchor.MiddleLeft;
+            }
+            return img;
+        }
+
         /// <summary>Barra de progresso: fundo + preenchimento. Devolve o Image de preenchimento (use fillAmount).</summary>
         public static Image ProgressBar(Transform parent, float height, Color? fill = null)
         {

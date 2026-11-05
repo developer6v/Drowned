@@ -58,7 +58,8 @@ namespace Drowned.UI
                     any = true;
                     var d = data;
                     var btn = UiKit.Button(buttons.transform, "", () => _build.Toggle(d), UiTheme.FontSmall);
-                    UiKit.Size(btn, width: 150f, height: 68f);
+                    UiKit.Size(btn, width: 190f, height: 68f);
+                    UiKit.AddButtonIcon(btn, GameIcons.Structure(d.Id), 44f);
                     _entries.Add(new Entry { Data = d, Button = btn, Text = UiKit.ButtonText(btn) });
                 }
                 if (!any) UiKit.Label(buttons.transform, "(nenhuma)", UiTheme.FontSmall, UiTheme.TextMuted, TextAnchor.MiddleCenter);
@@ -70,7 +71,8 @@ namespace Drowned.UI
             if (game.Monument.StageCount > 0)
             {
                 _monumentButton = UiKit.Button(row.transform, "", () => _game.Monument.ToggleActive(), UiTheme.FontSmall);
-                UiKit.Size(_monumentButton, width: 190f, height: 68f);
+                UiKit.Size(_monumentButton, width: 230f, height: 68f);
+                UiKit.AddButtonIcon(_monumentButton, GameIcons.Monument, 44f);
                 game.Monument.OnActiveChanged += _ => RefreshMonument();
                 game.Monument.OnCompleted += RefreshMonument;
                 RefreshMonument();

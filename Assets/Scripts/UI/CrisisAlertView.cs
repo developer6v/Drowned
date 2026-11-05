@@ -45,6 +45,15 @@ namespace Drowned.UI
             UiKit.Anchor(_messageBg.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -96f), new Vector2(760f, 44f));
             _message = UiKit.Label(_messageBg.transform, "", UiTheme.FontNormal, UiTheme.Text, TextAnchor.MiddleCenter, FontStyle.Bold);
             UiKit.Stretch(_message.rectTransform, 12f, 4f);
+            var alertIcon = GameIcons.Alert;
+            if (alertIcon != null)
+            {
+                var icon = UiKit.Icon(_messageBg.transform, alertIcon, 32f);
+                icon.GetComponent<LayoutElement>().ignoreLayout = true;
+                UiKit.Anchor(icon.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
+                    new Vector2(12f, 0f), new Vector2(32f, 32f));
+                _message.rectTransform.offsetMin = new Vector2(52f, _message.rectTransform.offsetMin.y);
+            }
 
             game.Resources.OnDepleted += _ => Refresh();
             game.Resources.OnRestored += _ => Refresh();
