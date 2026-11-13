@@ -127,3 +127,16 @@ out/<Nome>/
 ```
 
 A pasta `out/` está no `.gitignore`. O que vai para o Git são os sheets copiados para `Assets/Sprites/`.
+
+## Quadros da introdução (SCRUM-198)
+
+```bash
+blender -b --python tools/blender/render_intro.py --
+blender -b --python tools/blender/render_intro.py -- --only 3 --percent 30 --samples 16 --preview
+```
+
+Monta 5 cenas com os modelos Kenney (cidade sob a cúpula → cúpula rachando → ruínas → sobreviventes →
+o Monumento ao longe) e grava `Assets/Sprites/Intro/Resources/Intro/intro_1..5.png` em 1920×1080.
+`--preview` grava em `tools/blender/out/Intro/` sem mexer em Assets. A névoa da água é feita com cartões
+transparentes na frente da câmera e os feixes de luz com cones emissivos: volume de verdade no EEVEE do
+Blender 5.2 deixa o quadro preto. O `IntroPostprocessor` importa os PNGs como Sprite.

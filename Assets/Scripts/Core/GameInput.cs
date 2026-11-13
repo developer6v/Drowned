@@ -83,6 +83,21 @@ namespace Drowned.Core
             }
         }
 
+        /// <summary>Barra de espaço (avançar a introdução, SCRUM-198).</summary>
+        public static bool SpaceDown
+        {
+            get
+            {
+#if DROWNED_INPUT_SYSTEM && ENABLE_INPUT_SYSTEM
+                return Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame;
+#elif ENABLE_LEGACY_INPUT_MANAGER
+                return Input.GetKeyDown(KeyCode.Space);
+#else
+                return false;
+#endif
+            }
+        }
+
         /// <summary>Verdadeiro se o mouse está sobre um elemento de UI (botão, painel).</summary>
         public static bool IsPointerOverUI => EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
     }
