@@ -12,18 +12,48 @@ namespace Drowned.UI
         StructureBuilt = 1,
         /// <summary>A velocidade do jogo mudou (pausa, 1x, 2x, 3x).</summary>
         SpeedChanged = 2,
+        /// <summary>O jogador escolheu uma estrutura na barra de construção (entrou no modo construção). SCRUM-197.</summary>
+        BuildModeEntered = 3,
+        /// <summary>O jogador moveu ou deu zoom na câmera. SCRUM-197.</summary>
+        CameraMoved = 4,
     }
 
-    /// <summary>Um passo do tutorial: texto mostrado e o gatilho que leva ao próximo.</summary>
+    /// <summary>Para onde a seta do passo aponta (SCRUM-197). A view traduz em um retângulo na tela.</summary>
+    public enum TutorialTarget
+    {
+        /// <summary>Sem alvo: só o balão, no centro.</summary>
+        None = 0,
+        /// <summary>Os três recursos na barra de cima.</summary>
+        ResourceBar = 1,
+        /// <summary>O botão da Moradia na barra de baixo.</summary>
+        HousingButton = 2,
+        /// <summary>Um lugar livre no mapa onde dá para construir a estrutura escolhida.</summary>
+        BuildSpot = 3,
+        /// <summary>Os botões de velocidade.</summary>
+        SpeedButtons = 4,
+        /// <summary>O painel do Monumento.</summary>
+        MonumentPanel = 5,
+        /// <summary>Setas para os quatro lados a partir do centro: mover a câmera.</summary>
+        CameraArrows = 6,
+    }
+
+    /// <summary>
+    /// Um passo do tutorial: frase curta (<see cref="Text"/>), detalhe opcional em letra menor, o alvo da seta
+    /// e o gatilho que leva ao próximo.
+    /// </summary>
     public readonly struct TutorialStep
     {
         public string Text { get; }
+        public string Detail { get; }
         public TutorialTrigger Trigger { get; }
+        public TutorialTarget Target { get; }
 
-        public TutorialStep(string text, TutorialTrigger trigger)
+        public TutorialStep(string text, TutorialTrigger trigger, TutorialTarget target = TutorialTarget.None, string detail = "")
         {
             Text = text ?? "";
+            Detail = detail ?? "";
             Trigger = trigger;
+            Target = target;
         }
     }
 

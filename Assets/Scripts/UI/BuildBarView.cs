@@ -27,6 +27,14 @@ namespace Drowned.UI
         private readonly List<Entry> _entries = new List<Entry>();
         private Button _monumentButton;
 
+        /// <summary>Primeiro botão da categoria na barra (alvo da seta do tutorial, SCRUM-197). Null se não houver.</summary>
+        public RectTransform ButtonFor(StructureCategory category)
+        {
+            foreach (var e in _entries)
+                if (e.Data.Category == category) return e.Button.GetComponent<RectTransform>();
+            return null;
+        }
+
         // painel da estrutura selecionada
         private Image _structurePanel;
         private Text _structureTitle;

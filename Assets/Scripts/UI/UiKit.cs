@@ -124,6 +124,19 @@ namespace Drowned.UI
             return sprite;
         }
 
+        private static readonly System.Collections.Generic.Dictionary<long, Sprite> _thickRings =
+            new System.Collections.Generic.Dictionary<long, Sprite>();
+
+        /// <summary>Anel de cantos arredondados com espessura escolhida (moldura de destaque do tutorial, SCRUM-197).</summary>
+        public static Sprite ThickRingSprite(int radius, int width)
+        {
+            long key = ((long)radius << 16) | (uint)width;
+            if (_thickRings.TryGetValue(key, out var cached) && cached != null) return cached;
+            var sprite = MakeRoundedSprite($"UiThickRing{radius}_{width}", Mathf.Max(1, radius), Mathf.Max(1, width));
+            _thickRings[key] = sprite;
+            return sprite;
+        }
+
         /// <summary>
         /// Gera um retângulo branco de cantos arredondados (9-slice). <paramref name="ringWidth"/> &lt;= 0 = cheio;
         /// &gt; 0 = só um anel com essa espessura. Bordas suavizadas em 1 px.
