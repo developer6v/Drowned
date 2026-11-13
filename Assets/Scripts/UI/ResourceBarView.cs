@@ -26,6 +26,11 @@ namespace Drowned.UI
         private Button[] _speedButtons;
         private float _blink;
 
+        /// <summary>Os blocos dos 3 recursos (alvo da seta do tutorial, SCRUM-197).</summary>
+        public RectTransform[] ResourceGroups { get; private set; } = new RectTransform[0];
+        /// <summary>Os botões de velocidade (alvo da seta do tutorial).</summary>
+        public RectTransform SpeedGroup { get; private set; }
+
         public void Build(Transform canvas, GameManager game, Sprite[] icons, System.Action onOpenResearch, System.Action onOpenSpecialists)
         {
             _game = game;
@@ -34,6 +39,7 @@ namespace Drowned.UI
             var row = UiKit.Horizontal(panel.transform, "Row", 24f, new RectOffset(16, 16, 6, 6));
             UiKit.Stretch(row.GetComponent<RectTransform>());
 
+            ResourceGroups = new RectTransform[_entries.Length];
             for (int i = 0; i < _entries.Length; i++)
             {
                 var type = (ResourceType)i;
@@ -45,6 +51,7 @@ namespace Drowned.UI
                 var value = UiKit.Label(valueRow.transform, "0", UiTheme.FontLarge, UiTheme.Text, TextAnchor.MiddleLeft, FontStyle.Bold);
                 var rate = UiKit.Label(valueRow.transform, "+0/dia", UiTheme.FontSmall, UiTheme.TextMuted);
                 UiKit.Size(group, width: 210f);
+                ResourceGroups[i] = group.GetComponent<RectTransform>();
                 _entries[i] = new Entry { Type = type, Value = value, Rate = rate, Icon = icon };
             }
 
@@ -64,6 +71,7 @@ namespace Drowned.UI
 
             // Velocidade
             var speeds = UiKit.Horizontal(row.transform, "Speed", 4f, new RectOffset(0, 0, 0, 0));
+            SpeedGroup = speeds.GetComponent<RectTransform>();
             var values = new[] { GameSpeed.Paused, GameSpeed.Normal, GameSpeed.Fast, GameSpeed.Fastest };
             _speedButtons = new Button[values.Length];
             for (int i = 0; i < values.Length; i++)

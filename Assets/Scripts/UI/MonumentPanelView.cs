@@ -16,10 +16,14 @@ namespace Drowned.UI
         private Text _missing;
         private Button _toggle;
 
+        /// <summary>O painel inteiro (alvo da seta do tutorial, SCRUM-197).</summary>
+        public RectTransform Panel { get; private set; }
+
         public void Build(Transform canvas, GameManager game)
         {
             _game = game;
             var panel = UiKit.Panel(canvas, "MonumentPanel", UiTheme.PanelBg);
+            Panel = panel.rectTransform;
             UiKit.Anchor(panel.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-12f, -76f), new Vector2(340f, 230f));
             var col = UiKit.Vertical(panel.transform, "Col", 6f);
             UiKit.Stretch(col.GetComponent<RectTransform>());

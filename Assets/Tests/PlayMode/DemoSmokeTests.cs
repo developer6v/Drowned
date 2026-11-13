@@ -133,7 +133,9 @@ namespace Drowned.Tests
                 Assert.IsNotNull(s.CurrentLevel.Sprite, $"estrutura {s.Data.Id} nível {s.Level} sem sprite");
             Assert.IsNotNull(game.Monument.CurrentSprite, "Monumento sem sprite");
 
-            // 4. Dias simulados: Advance dispara os ticks de verdade (recursos, população, colapso)
+            // 4. Dias simulados: Advance dispara os ticks de verdade (recursos, população, colapso).
+            // O tutorial da primeira partida começa com o tempo pausado (SCRUM-197); o teste solta o tempo.
+            game.Clock.SetSpeed(GameSpeed.Normal);
             float dayLength = game.Clock.SecondsPerDay;
             for (int d = 0; d < DaysToSimulate; d++)
             {

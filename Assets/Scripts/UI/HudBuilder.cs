@@ -55,15 +55,26 @@ namespace Drowned.UI
             ResearchPanel = Add<ResearchPanelView>("ResearchPanel");
             SpecialistPanel = Add<SpecialistPanelView>("SpecialistPanel");
 
-            Add<ResourceBarView>("ResourceBar").Build(root, _game, _resourceIcons, ResearchPanel.Toggle, SpecialistPanel.Toggle);
+            var resourceBar = Add<ResourceBarView>("ResourceBar");
+            resourceBar.Build(root, _game, _resourceIcons, ResearchPanel.Toggle, SpecialistPanel.Toggle);
             Add<PopulationView>("Population").Build(root, _game);
-            Add<MonumentPanelView>("MonumentPanel").Build(root, _game);
-            Add<BuildBarView>("BuildBar").Build(root, _game, build, selector);
+            var monumentPanel = Add<MonumentPanelView>("MonumentPanel");
+            monumentPanel.Build(root, _game);
+            var buildBar = Add<BuildBarView>("BuildBar");
+            buildBar.Build(root, _game, build, selector);
             ResearchPanel.Build(root, _game);
             SpecialistPanel.Build(root, _game);
             Add<CrisisAlertView>("CrisisAlert").Build(root, _game);
             Tutorial = Add<TutorialView>("Tutorial");
-            Tutorial.Build(root, _game);
+            // Onde fica cada alvo da seta do tutorial (SCRUM-197)
+            Tutorial.Build(root, _game, build, target => target switch
+            {
+                TutorialTarget.ResourceBar => resourceBar.ResourceGroups,
+                TutorialTarget.SpeedButtons => new[] { resourceBar.SpeedGroup },
+                TutorialTarget.HousingButton => new[] { buildBar.ButtonFor(Drowned.Resources.StructureCategory.Housing) },
+                TutorialTarget.MonumentPanel => new[] { monumentPanel.Panel },
+                _ => null,
+            });
             Toast = Add<ToastView>("Toasts");
             Toast.Build(root);
             PauseMenu = Add<PauseMenuView>("PauseMenu");

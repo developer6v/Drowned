@@ -103,5 +103,46 @@ namespace Drowned.Tests
             Assert.IsTrue(System.Array.Exists(steps, s => s.Trigger == TutorialTrigger.StructureBuilt), "precisa de um passo que pede para construir");
             foreach (var s in steps) Assert.IsNotEmpty(s.Text);
         }
+
+        [Test]
+        public void Passos_padrao_ensinam_fazendo_e_apontam_para_algo()
+        {
+            var steps = TutorialView.DefaultSteps(null);
+            var triggers = new HashSet<TutorialTrigger>();
+            foreach (var s in steps)
+            {
+                triggers.Add(s.Trigger);
+                Assert.AreNotEqual(TutorialTarget.None, s.Target, $"o passo '{s.Text}' precisa de um alvo para a seta");
+                Assert.LessOrEqual(s.Text.Split(' ').Length, 8, $"frase curta: '{s.Text}'");
+            }
+            Assert.IsTrue(triggers.Contains(TutorialTrigger.CameraMoved));
+            Assert.IsTrue(triggers.Contains(TutorialTrigger.BuildModeEntered));
+            Assert.IsTrue(triggers.Contains(TutorialTrigger.SpeedChanged));
+            // A Moradia vem antes de construir no mapa
+            int pick = System.Array.FindIndex(steps, s => s.Trigger == TutorialTrigger.BuildModeEntered);
+            int build = System.Array.FindIndex(steps, s => s.Trigger == TutorialTrigger.StructureBuilt);
+            Assert.Less(pick, build);
+            Assert.AreEqual(TutorialTarget.BuildSpot, steps[build].Target);
+        }
+
+        [Test]
+        public void Gatilhos_novos_avancam_so_no_passo_certo()
+        {
+            var t = Make(TutorialTrigger.CameraMoved, TutorialTrigger.BuildModeEntered);
+            t.Start();
+            Assert.IsFalse(t.Notify(TutorialTrigger.BuildModeEntered));
+            Assert.IsTrue(t.Notify(TutorialTrigger.CameraMoved));
+            Assert.IsTrue(t.Notify(TutorialTrigger.BuildModeEntered));
+            Assert.IsTrue(t.IsFinished);
+        }
+
+        [Test]
+        public void Passo_guarda_alvo_e_detalhe()
+        {
+            var s = new TutorialStep("Clique", TutorialTrigger.Acknowledge, TutorialTarget.SpeedButtons, null);
+            Assert.AreEqual(TutorialTarget.SpeedButtons, s.Target);
+            Assert.AreEqual("", s.Detail);
+            Assert.AreEqual(TutorialTarget.None, new TutorialStep("x", TutorialTrigger.Acknowledge).Target);
+        }
     }
 }
