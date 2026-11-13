@@ -10,10 +10,14 @@ namespace Drowned.World
     /// circulando entre as estruturas pelas células livres, contornando as construções (rota em grade, SCRUM-199). Cada um tem um tom de roupa diferente (variações da SCRUM-139) e vira para a
     /// direção em que anda usando as 4 direções do sheet. Andam no tempo do jogo: param na pausa e aceleram em 2x/3x.
     /// Sprites de <c>Resources/Characters/Inhabitant/Inhabitant_sheet</c>; sem eles, não desenha nada.
+    /// Especialistas desbloqueados (SCRUM-152) aparecem nos primeiros mergulhadores com o sprite próprio
+    /// (<c>Characters/Specialist_&lt;id&gt;</c>), sem tinta de roupa; sem o sprite, ficam com o visual comum.
     /// </summary>
     public sealed class InhabitantWalkers : MonoBehaviour
     {
         [SerializeField] private string _sheetPath = "Characters/Inhabitant/Inhabitant_sheet";
+        [Tooltip("Caminho em Resources do sheet de cada especialista; {0} é o id (engineer, biologist...).")]
+        [SerializeField] private string _specialistSheetFormat = "Characters/Specialist_{0}/Specialist_{0}_sheet";
         [SerializeField, Range(0, 100)] private int _maxWalkers = 24;
         [SerializeField, Min(0.05f)] private float _speed = 0.55f;
         [Tooltip("Raio, em células, em volta de uma estrutura onde o habitante escolhe o próximo destino.")]
@@ -34,12 +38,16 @@ namespace Drowned.World
         private GameManager _game;
         private TilemapMapBehaviour _map;
         private Sprite[] _facing; // S, W, N, E
+        private readonly Dictionary<string, Sprite[]> _specialistFacing = new Dictionary<string, Sprite[]>();
+        private int _appliedSpecialists = -1;
         private readonly List<Walker> _walkers = new List<Walker>();
         private System.Random _rng = new System.Random(11);
 
         private sealed class Walker
         {
             public SpriteRenderer Renderer;
+            public Sprite[] Sheet;
+            public Color Tint;
             public Vector3 Position;
             /// <summary>Próximos pontos a percorrer (centros de célula livres), até o destino.</summary>
             public readonly Queue<Vector3> Path = new Queue<Vector3>();
@@ -110,6 +118,33 @@ namespace Drowned.World
                 if (w.Renderer != null) Destroy(w.Renderer.gameObject);
                 _walkers.RemoveAt(_walkers.Count - 1);
             }
+            ApplyAppearance();
+        }
+
+        /// <summary>Os primeiros mergulhadores viram os especialistas desbloqueados; o resto usa o visual comum.</summary>
+        private void ApplyAppearance()
+        {
+            var unlocked = _game.Specialists.Unlocked;
+            _appliedSpecialists = unlocked.Count;
+            for (int i = 0; i < _walkers.Count; i++)
+            {
+                var w = _walkers[i];
+                int slot = InhabitantMath.SpecialistSlot(i, unlocked.Count, _walkers.Count);
+                Sprite[] sheet = slot >= 0 ? SpecialistFacing(unlocked[slot].Id) : null;
+                w.Sheet = sheet ?? _facing;
+                w.Renderer.color = sheet != null ? Color.white : w.Tint;
+            }
+        }
+
+        private Sprite[] SpecialistFacing(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return null;
+            if (!_specialistFacing.TryGetValue(id, out var sheet))
+            {
+                sheet = LoadFacing(string.Format(_specialistSheetFormat, id));
+                _specialistFacing[id] = sheet; // guarda null também, para não procurar de novo
+            }
+            return sheet;
         }
 
         private Walker Spawn(int index)
@@ -119,10 +154,13 @@ namespace Drowned.World
             go.transform.localScale = new Vector3(Scale, Scale, 1f);
             var r = go.AddComponent<SpriteRenderer>();
             r.sprite = _facing[InhabitantMath.FacingDownLeft];
-            r.color = _suitTints.Length > 0 ? _suitTints[index % _suitTints.Length] : Color.white;
+            var tint = _suitTints.Length > 0 ? _suitTints[index % _suitTints.Length] : Color.white;
+            r.color = tint;
             var walker = new Walker
             {
                 Renderer = r,
+                Sheet = _facing,
+                Tint = tint,
                 Position = RandomCell(out var cell) ? Jitter(_map.GridToWorldCenter(cell.x, cell.y)) : CenterOfMap(),
                 WaitUntil = 0f,
                 Facing = InhabitantMath.FacingDownLeft,
@@ -211,6 +249,8 @@ namespace Drowned.World
         private void Update()
         {
             if (_game == null) return;
+            // Desbloqueio durante a partida ou vindo de um save (Restore não dispara evento)
+            if (_game.Specialists.UnlockedCount != _appliedSpecialists) ApplyAppearance();
             float mult = _game.IsOver ? 0f : _game.Clock.Speed.Multiplier();
             float dt = Time.deltaTime * mult;
             float now = Time.time;
@@ -251,7 +291,7 @@ namespace Drowned.World
 
                 float bob = moving ? InhabitantMath.StepBob(now * mult, w.Phase, 2.2f, 0.035f) : 0f;
                 w.Renderer.transform.position = w.Position + new Vector3(0f, bob, 0f);
-                w.Renderer.sprite = _facing[w.Facing];
+                w.Renderer.sprite = (w.Sheet ?? _facing)[w.Facing];
                 var cell = _map.WorldToGrid(w.Position);
                 w.Renderer.sortingOrder = StructureManagerBehaviour.WalkerSortingOrderFor(cell.x, cell.y);
             }

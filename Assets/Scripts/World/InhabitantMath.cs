@@ -80,5 +80,15 @@ namespace Drowned.World
             result.Reverse();
             return result;
         }
+
+        /// <summary>
+        /// Qual especialista (índice na ordem de desbloqueio) o mergulhador <paramref name="walkerIndex"/> representa,
+        /// ou -1 se for um habitante comum (SCRUM-152). Os primeiros mergulhadores viram os especialistas, um cada.
+        /// </summary>
+        public static int SpecialistSlot(int walkerIndex, int unlockedCount, int walkerCount)
+        {
+            if (walkerIndex < 0 || walkerIndex >= walkerCount) return -1;
+            return walkerIndex < unlockedCount ? walkerIndex : -1;
+        }
     }
 }

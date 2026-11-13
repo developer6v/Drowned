@@ -36,6 +36,17 @@ namespace Drowned.Tests
                 Assert.That(InhabitantMath.StepBob(i * 0.13f, 0.3f, 2.2f, 0.035f), Is.InRange(0f, 0.035f + 1e-6f));
         }
 
+        [Test]
+        public void Primeiros_mergulhadores_viram_os_especialistas_desbloqueados()
+        {
+            Assert.AreEqual(0, InhabitantMath.SpecialistSlot(0, 2, 10));
+            Assert.AreEqual(1, InhabitantMath.SpecialistSlot(1, 2, 10));
+            Assert.AreEqual(-1, InhabitantMath.SpecialistSlot(2, 2, 10), "terceiro é habitante comum");
+            Assert.AreEqual(-1, InhabitantMath.SpecialistSlot(0, 0, 10), "sem especialista desbloqueado");
+            Assert.AreEqual(-1, InhabitantMath.SpecialistSlot(3, 4, 3), "fora da quantidade desenhada");
+            Assert.AreEqual(-1, InhabitantMath.SpecialistSlot(-1, 4, 10));
+        }
+
         // ------------------------------------------------------------------ rota em grade (SCRUM-199)
 
         private static GridMap OpenGrid(int w, int h)
