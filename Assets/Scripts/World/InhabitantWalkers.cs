@@ -7,7 +7,7 @@ namespace Drowned.World
 {
     /// <summary>
     /// Habitantes andando pelo mapa (SCRUM-126/139): um mergulhador por habitante, até <see cref="_maxWalkers"/>,
-    /// circulando entre as estruturas. Cada um tem um tom de roupa diferente (variações da SCRUM-139) e vira para a
+    /// circulando entre as estruturas pelas células livres, contornando as construções (rota em grade, SCRUM-199). Cada um tem um tom de roupa diferente (variações da SCRUM-139) e vira para a
     /// direção em que anda usando as 4 direções do sheet. Andam no tempo do jogo: param na pausa e aceleram em 2x/3x.
     /// Sprites de <c>Resources/Characters/Inhabitant/Inhabitant_sheet</c>; sem eles, não desenha nada.
     /// </summary>
@@ -41,7 +41,10 @@ namespace Drowned.World
         {
             public SpriteRenderer Renderer;
             public Vector3 Position;
-            public Vector3 Target;
+            /// <summary>Próximos pontos a percorrer (centros de célula livres), até o destino.</summary>
+            public readonly Queue<Vector3> Path = new Queue<Vector3>();
+            /// <summary>Rota precisa ser refeita (estrutura nova pode ter bloqueado o caminho).</summary>
+            public bool Replan;
             public float WaitUntil;
             public int Facing;
             public float Phase;
@@ -58,20 +61,36 @@ namespace Drowned.World
             _game = gm != null ? gm.Game : null;
             if (_game == null || _map == null) { enabled = false; return; }
 
-            _facing = LoadFacing();
+            _facing = LoadFacing(_sheetPath);
             if (_facing == null)
             {
                 Debug.Log($"InhabitantWalkers: sheet Resources/{_sheetPath} não encontrado; habitantes não serão desenhados.", this);
                 enabled = false;
                 return;
             }
-            _game.Population.OnPopulationChanged += _ => Sync();
+            _game.Population.OnPopulationChanged += HandlePopulationChanged;
+            _game.Structures.OnStructureBuilt += HandleStructureBuilt;
             Sync();
         }
 
-        private Sprite[] LoadFacing()
+        private void OnDestroy()
         {
-            var all = UnityEngine.Resources.LoadAll<Sprite>(_sheetPath);
+            if (_game == null) return;
+            _game.Population.OnPopulationChanged -= HandlePopulationChanged;
+            _game.Structures.OnStructureBuilt -= HandleStructureBuilt;
+        }
+
+        private void HandlePopulationChanged(int _) => Sync();
+
+        // Construção nova pode cair no caminho ou em cima de alguém: todos refazem a rota (SCRUM-199)
+        private void HandleStructureBuilt(StructureInstance _)
+        {
+            foreach (var w in _walkers) w.Replan = true;
+        }
+
+        private Sprite[] LoadFacing(string path)
+        {
+            var all = UnityEngine.Resources.LoadAll<Sprite>(path);
             if (all == null || all.Length == 0) return null;
             var result = new Sprite[4];
             string[] dirs = { "S", "W", "N", "E" };
@@ -101,20 +120,20 @@ namespace Drowned.World
             var r = go.AddComponent<SpriteRenderer>();
             r.sprite = _facing[InhabitantMath.FacingDownLeft];
             r.color = _suitTints.Length > 0 ? _suitTints[index % _suitTints.Length] : Color.white;
-            var start = RandomDestination();
-            return new Walker
+            var walker = new Walker
             {
                 Renderer = r,
-                Position = start,
-                Target = RandomDestination(),
+                Position = RandomCell(out var cell) ? Jitter(_map.GridToWorldCenter(cell.x, cell.y)) : CenterOfMap(),
                 WaitUntil = 0f,
                 Facing = InhabitantMath.FacingDownLeft,
                 Phase = (float)_rng.NextDouble(),
             };
+            PlanNewTrip(walker);
+            return walker;
         }
 
-        /// <summary>Uma célula construível perto de uma estrutura qualquer (ou do centro do mapa, se não houver).</summary>
-        private Vector3 RandomDestination()
+        /// <summary>Uma célula livre perto de uma estrutura qualquer (ou do centro do mapa, se não houver).</summary>
+        private bool RandomCell(out (int x, int y) cell)
         {
             var grid = _map.Map;
             var structures = _game.Structures.Instances.ToList();
@@ -129,14 +148,64 @@ namespace Drowned.World
             {
                 int x = cx + _rng.Next(-_wanderRadius, _wanderRadius + 1);
                 int y = cy + _rng.Next(-_wanderRadius, _wanderRadius + 1);
-                if (grid.IsBuildable(x, y) && !grid.IsOccupied(x, y))
+                if (InhabitantMath.IsWalkable(grid, x, y))
                 {
-                    var c = _map.GridToWorldCenter(x, y);
-                    // espalha dentro da célula para não andarem em fila
-                    return c + new Vector3(((float)_rng.NextDouble() - 0.5f) * 0.4f, ((float)_rng.NextDouble() - 0.5f) * 0.2f, 0f);
+                    cell = (x, y);
+                    return true;
                 }
             }
-            return _map.GridToWorldCenter(cx, cy);
+            cell = default;
+            return false;
+        }
+
+        private Vector3 CenterOfMap() => _map.GridToWorldCenter(_map.Map.Width / 2, _map.Map.Height / 2);
+
+        /// <summary>Espalha dentro da célula para não andarem todos em fila no centro.</summary>
+        private Vector3 Jitter(Vector3 c) =>
+            c + new Vector3(((float)_rng.NextDouble() - 0.5f) * 0.3f, ((float)_rng.NextDouble() - 0.5f) * 0.15f, 0f);
+
+        /// <summary>Escolhe um destino e monta a rota pelas células livres. Sem rota, tenta outro destino.</summary>
+        private void PlanNewTrip(Walker w)
+        {
+            w.Path.Clear();
+            w.Replan = false;
+            var here = _map.WorldToGrid(w.Position);
+            for (int tries = 0; tries < 4; tries++)
+            {
+                if (!RandomCell(out var target)) continue;
+                if (TryRoute(w, here, target)) return;
+            }
+        }
+
+        /// <summary>Refaz a rota até o mesmo destino final; se não der mais, escolhe outro.</summary>
+        private void Replan(Walker w)
+        {
+            w.Replan = false;
+            if (w.Path.Count == 0)
+            {
+                // Parado: só precisa sair se construíram em cima dele
+                var cell = _map.WorldToGrid(w.Position);
+                if (!InhabitantMath.IsWalkable(_map.Map, cell.x, cell.y)) PlanNewTrip(w);
+                return;
+            }
+            Vector3 last = w.Path.ToArray()[w.Path.Count - 1];
+            var target = _map.WorldToGrid(last);
+            var here = _map.WorldToGrid(w.Position);
+            w.Path.Clear();
+            if (!TryRoute(w, here, (target.x, target.y))) PlanNewTrip(w);
+        }
+
+        private bool TryRoute(Walker w, Vector2Int here, (int x, int y) target)
+        {
+            var path = InhabitantMath.FindPath(_map.Map, here.x, here.y, target.x, target.y);
+            if (path == null || path.Count == 0) return false;
+            for (int i = 0; i < path.Count; i++)
+            {
+                var c = _map.GridToWorldCenter(path[i].x, path[i].y);
+                // Só o ponto final ganha deslocamento; os do meio ficam no centro da célula, longe das paredes
+                w.Path.Enqueue(i == path.Count - 1 ? Jitter(c) : c);
+            }
+            return true;
         }
 
         private void Update()
@@ -149,31 +218,42 @@ namespace Drowned.World
             foreach (var w in _walkers)
             {
                 if (w.Renderer == null) continue;
-                Vector3 delta = w.Target - w.Position;
+                if (w.Replan) Replan(w);
                 bool moving = false;
                 if (dt > 0f && now >= w.WaitUntil)
                 {
-                    float dist = delta.magnitude;
-                    float step = _speed * dt;
-                    if (dist <= step)
+                    if (w.Path.Count == 0)
                     {
-                        w.Position = w.Target;
-                        w.Target = RandomDestination();
-                        w.WaitUntil = now + Mathf.Lerp(_pauseAtTarget.x, _pauseAtTarget.y, (float)_rng.NextDouble()) / Mathf.Max(1f, mult);
+                        PlanNewTrip(w);
                     }
                     else
                     {
-                        w.Position += delta / dist * step;
-                        moving = true;
+                        Vector3 next = w.Path.Peek();
+                        Vector3 delta = next - w.Position;
+                        float dist = delta.magnitude;
+                        float step = _speed * dt;
+                        if (dist <= step)
+                        {
+                            w.Position = next;
+                            w.Path.Dequeue();
+                            // Chegou ao destino final: descansa um pouco antes da próxima volta
+                            if (w.Path.Count == 0)
+                                w.WaitUntil = now + Mathf.Lerp(_pauseAtTarget.x, _pauseAtTarget.y, (float)_rng.NextDouble()) / Mathf.Max(1f, mult);
+                        }
+                        else
+                        {
+                            w.Position += delta / dist * step;
+                            moving = true;
+                        }
+                        w.Facing = InhabitantMath.DirectionIndex(delta.x, delta.y, w.Facing);
                     }
-                    w.Facing = InhabitantMath.DirectionIndex(delta.x, delta.y, w.Facing);
                 }
 
                 float bob = moving ? InhabitantMath.StepBob(now * mult, w.Phase, 2.2f, 0.035f) : 0f;
                 w.Renderer.transform.position = w.Position + new Vector3(0f, bob, 0f);
                 w.Renderer.sprite = _facing[w.Facing];
                 var cell = _map.WorldToGrid(w.Position);
-                w.Renderer.sortingOrder = StructureManagerBehaviour.SortingOrderFor(cell.x, cell.y) + 1;
+                w.Renderer.sortingOrder = StructureManagerBehaviour.WalkerSortingOrderFor(cell.x, cell.y);
             }
         }
     }
