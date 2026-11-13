@@ -6,7 +6,8 @@ using UnityEngine.UI;
 namespace Drowned.UI
 {
     /// <summary>
-    /// Menu principal (SCRUM-178) e opções de volume (SCRUM-180), montados por código.
+    /// Menu principal (SCRUM-178) e opções de volume (SCRUM-180), montados por código. "Jogar" toca a introdução
+    /// na primeira vez e "Ver introdução" toca de novo (SCRUM-198).
     /// Coloque em um objeto vazio na cena "MainMenu". Jogar carrega a cena "Game"; Continuar aplica o save do slot 1.
     /// </summary>
     public sealed class MainMenuView : MonoBehaviour
@@ -28,7 +29,7 @@ namespace Drowned.UI
             // Menu
             var box = UiKit.Panel(root, "Menu", UiTheme.PanelBg);
             _menu = box.gameObject;
-            UiKit.Center(box.rectTransform, new Vector2(460f, 520f));
+            UiKit.Center(box.rectTransform, new Vector2(460f, 584f));
             var col = UiKit.Vertical(box.transform, "Col", 12f, new RectOffset(28, 28, 28, 28), TextAnchor.UpperCenter);
             UiKit.Stretch(col.GetComponent<RectTransform>());
             UiKit.Label(col.transform, "DROWNED", UiTheme.FontTitle, UiTheme.Amber, TextAnchor.MiddleCenter, FontStyle.Bold);
@@ -36,7 +37,9 @@ namespace Drowned.UI
             UiKit.Size(UiKit.Button(col.transform, "Jogar", () =>
             {
                 SaveSystem.PendingLoad = null;
-                SceneFlow.LoadGame();
+                // Primeira partida: conta a história antes (SCRUM-198)
+                if (IntroView.IsSeen) SceneFlow.LoadGame();
+                else IntroView.Play(SceneFlow.LoadGame);
             }), height: 52f);
             var cont = UiKit.Button(col.transform, "Continuar", () =>
             {
@@ -49,6 +52,7 @@ namespace Drowned.UI
             var at = SaveSystem.HasSave(1) ? SaveSystem.SavedAt(1) : null;
             cont.interactable = at.HasValue;
             UiKit.ButtonText(cont).text = at.HasValue ? $"Continuar ({at.Value:dd/MM HH:mm})" : "Continuar (sem save)";
+            UiKit.Size(UiKit.Button(col.transform, "Ver introdução", () => IntroView.Play(null)), height: 52f);
             UiKit.Size(UiKit.Button(col.transform, "Opções", () => ShowOptions(true)), height: 52f);
             UiKit.Size(UiKit.Button(col.transform, "Sair", SceneFlow.Quit), height: 52f);
 
