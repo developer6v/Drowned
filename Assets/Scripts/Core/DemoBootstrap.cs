@@ -28,6 +28,10 @@ namespace Drowned.Core
         [SerializeField, Min(8)] private int _mapHeight = 24;
         [Tooltip("Borda não construível ao redor do mapa, em células.")]
         [SerializeField, Min(0)] private int _border = 2;
+        [Tooltip("Tinta do chão: puxa a areia para o azul-petróleo da água.")]
+        [SerializeField] private Color _groundTint = new Color(0.52f, 0.72f, 0.84f);
+        [Tooltip("Zoom inicial da câmera (meia altura da visão, em unidades). Menor = mais perto.")]
+        [SerializeField, Min(1f)] private float _startZoom = 4.2f;
         [Tooltip("Lado do quadrado reservado ao Monumento no centro, em células.")]
         [SerializeField, Min(2)] private int _monumentSize = 4;
 
@@ -68,6 +72,7 @@ namespace Drowned.Core
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.transform.position = new Vector3(0f, 0f, -10f);
             new GameObject("Background").AddComponent<UnderwaterBackground>().Configure(cam); // SCRUM-169
+            new GameObject("Vignette").AddComponent<ScreenVignette>().Configure(cam);
 
             // 2. Relógio
             var clockGo = new GameObject("GameClock");
@@ -81,7 +86,10 @@ namespace Drowned.Core
 
             // 4. Controle de câmera
             var camCtrl = cam.gameObject.AddComponent<CameraController2D>();
-            camCtrl.Configure(map, 7f);
+            camCtrl.Configure(map, _startZoom);
+
+            // 4b. Luz da superfície dançando no chão
+            new GameObject("Caustics").AddComponent<CausticsOverlay>().Build(map);
 
             // 5. GameManager
             var gmGo = new GameObject("GameManager");
@@ -116,6 +124,7 @@ namespace Drowned.Core
                 monGo.AddComponent<MonumentBehaviour>();
                 monGo.SetActive(true);
                 if (sr.sprite == null && rules.Monument != null) sr.sprite = rules.Monument.RuinSprite;
+                BlobShadow.Attach(monGo.transform, _monumentSize * 0.9f, 0.5f);
             }
 
             // 7a. Habitantes andando entre as estruturas (SCRUM-126/139)
@@ -157,6 +166,7 @@ namespace Drowned.Core
             grid.cellSize = new Vector3(1f, 0.5f, 1f);
 
             var ground = NewTilemap(gridGo.transform, "Ground", 0);
+            ground.color = _groundTint;
             var buildable = NewTilemap(gridGo.transform, "Buildable", 1);
 
             var groundTile = DemoArt.Tile(DemoArt.Ground, DemoArt.GroundOutline);

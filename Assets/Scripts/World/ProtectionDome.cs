@@ -56,6 +56,8 @@ namespace Drowned.World
                     float x = (px + 0.5f) / texW * 2f - 1f;
                     float y = ((py + 0.5f) / texH - pivotY) * (baseRy + height);
                     float a = DomeShape.Alpha(x, y, baseRy, height, _fill, _rim, _rimWidth);
+                    // Borda esfumada em ~2 pixels: sem isso o contorno sai serrilhado
+                    a *= Mathf.Clamp01((1f - DomeShape.Edge(x, y, baseRy, height)) * texW * 0.25f);
                     // reflexo: arco claro no alto à esquerda
                     if (y > 0f)
                     {
