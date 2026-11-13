@@ -50,6 +50,33 @@ namespace Drowned.Tests
         }
 
         [UnityTest]
+        public IEnumerator Print_dos_especialistas_na_cidade()
+        {
+            var scene = SceneManager.CreateScene("ShotSpecialists");
+            SceneManager.SetActiveScene(scene);
+            yield return null;
+            new GameObject("DemoBootstrap").AddComponent<DemoBootstrap>();
+            for (int i = 0; i < 10; i++) yield return null;
+            var gm = GameManagerBehaviour.Instance;
+            Assert.IsNotNull(gm);
+            // Libera os 4 especialistas pelo mesmo caminho do save (SCRUM-152)
+            var ids = new System.Collections.Generic.List<string>();
+            foreach (var s in gm.Game.Specialists.All) ids.Add(s.Id);
+            gm.Game.Specialists.Restore(ids);
+            yield return new WaitForSecondsRealtime(1.5f); // espalham um pouco
+            var walkers = GameObject.Find("Inhabitants");
+            Assert.IsNotNull(walkers, "sem Inhabitants");
+            Vector3 c = Vector3.zero;
+            int n = 0;
+            foreach (Transform t in walkers.transform) { c += t.position; n++; }
+            Assert.Greater(n, 0, "nenhum mergulhador");
+            var cam = Camera.main;
+            cam.transform.position = new Vector3(c.x / n, c.y / n, cam.transform.position.z);
+            cam.orthographicSize = 2.2f;
+            Capture("especialistas.png");
+        }
+
+        [UnityTest]
         public IEnumerator Print_do_menu_principal()
         {
             var scene = SceneManager.CreateScene("ShotMenu");
@@ -84,11 +111,13 @@ namespace Drowned.Tests
                 canvas.pixelPerfect = true;
                 canvas.worldCamera = cam;
                 canvas.planeDistance = cam.nearClipPlane + 1f;
+                canvas.sortingOrder = 32000; // no jogo a HUD é overlay e fica sempre por cima do mundo
             }
 
             var rt = new RenderTexture(Width, Height, 24, RenderTextureFormat.ARGB32);
             var previous = cam.targetTexture;
             cam.targetTexture = rt;
+            cam.aspect = (float)Width / Height; // em batch a tela virtual não é 16:9
             Canvas.ForceUpdateCanvases();
             cam.Render();
 
@@ -99,6 +128,7 @@ namespace Drowned.Tests
             tex.Apply();
             RenderTexture.active = active;
             cam.targetTexture = previous;
+            cam.ResetAspect();
 
             Directory.CreateDirectory(OutDir);
             string path = Path.Combine(OutDir, fileName);

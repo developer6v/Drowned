@@ -348,14 +348,99 @@
     {
       "name": "Inhabitant",
       "category": "Characters/Resources/Characters",
-      "fitHeight": 0.35,
+      "rotate": 180,
+      "scale": 0.4414,
+      "anchor": [
+        -2.0,
+        1.535
+      ],
+      "size": 128,
+      "orthoScale": 0.7,
       "parts": [
         {
           "model": "modelos/kenney/space/astronautA.glb"
         }
+      ]
+    },
+    {
+      "name": "Specialist_engineer",
+      "category": "Characters/Resources/Characters",
+      "rotate": 180,
+      "scale": 0.4414,
+      "anchor": [
+        -2.0,
+        1.535
       ],
       "size": 128,
-      "orthoScale": 0.7
+      "orthoScale": 0.7,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/astronautA.glb"
+        },
+        {
+          "generator": "placeholder:acc_engineer"
+        }
+      ]
+    },
+    {
+      "name": "Specialist_biologist",
+      "category": "Characters/Resources/Characters",
+      "rotate": 180,
+      "scale": 0.4414,
+      "anchor": [
+        -2.0,
+        1.535
+      ],
+      "size": 128,
+      "orthoScale": 0.7,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/astronautA.glb"
+        },
+        {
+          "generator": "placeholder:acc_biologist"
+        }
+      ]
+    },
+    {
+      "name": "Specialist_scientist",
+      "category": "Characters/Resources/Characters",
+      "rotate": 180,
+      "scale": 0.4414,
+      "anchor": [
+        -2.0,
+        1.535
+      ],
+      "size": 128,
+      "orthoScale": 0.7,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/astronautA.glb"
+        },
+        {
+          "generator": "placeholder:acc_scientist"
+        }
+      ]
+    },
+    {
+      "name": "Specialist_architect",
+      "category": "Characters/Resources/Characters",
+      "rotate": 180,
+      "scale": 0.4414,
+      "anchor": [
+        -2.0,
+        1.535
+      ],
+      "size": 128,
+      "orthoScale": 0.7,
+      "parts": [
+        {
+          "model": "modelos/kenney/space/astronautA.glb"
+        },
+        {
+          "generator": "placeholder:acc_architect"
+        }
+      ]
     },
     {
       "name": "Monument_Ruin",

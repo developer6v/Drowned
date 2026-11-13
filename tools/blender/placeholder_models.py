@@ -285,6 +285,68 @@ def seabed(seed, pebbles, shells):
     return parts
 
 
+# ---------------------------------------------------------------------------
+# Acessorios dos especialistas (SCRUM-152)
+# ---------------------------------------------------------------------------
+# Modelados nas coordenadas do astronautA da Kenney (sem girar): centro em (2.0, -1.5), cabeca de z 0.48 a 0.79,
+# maos perto de z 0.14 (direita em x ~2.19, esquerda em x ~1.81), rosto em +Y (y ~ -1.37), mochila em -Y.
+# No manifest, cada especialista = astronautA + acc_<id>, girados juntos.
+
+ACC_X, ACC_Y = 2.0, -1.5
+HEAD_TOP = 0.793
+FACE_Y = -1.37
+HAT_YELLOW = (0.98, 0.78, 0.12)
+TOOL_GREY = (0.62, 0.66, 0.72)
+SAMPLE_GREEN = (0.30, 0.85, 0.45)
+COAT_WHITE = (0.95, 0.96, 0.98)
+LENS = (0.35, 0.85, 1.00)
+BOARD_BROWN = (0.55, 0.36, 0.20)
+PLAN_BLUE = (0.25, 0.50, 0.95)
+
+
+def acc_engineer():
+    """Capacete de obra com aba + chave de boca na mao direita."""
+    shell = box("Eng_Hat", HAT_YELLOW, size=(0.30, 0.30, 0.07), at=(ACC_X, ACC_Y, HEAD_TOP - 0.01), roughness=0.4)
+    crown = box("Eng_HatTop", HAT_YELLOW, size=(0.22, 0.24, 0.06), at=(ACC_X, ACC_Y, HEAD_TOP + 0.06), roughness=0.4)
+    brim = box("Eng_Brim", HAT_YELLOW, size=(0.30, 0.09, 0.025), at=(ACC_X, FACE_Y + 0.04, HEAD_TOP - 0.01), roughness=0.4)
+    handle = box("Eng_Wrench", TOOL_GREY, size=(0.035, 0.035, 0.15), at=(2.21, -1.42, 0.03), roughness=0.3)
+    jaw = box("Eng_WrenchHead", TOOL_GREY, size=(0.08, 0.04, 0.04), at=(2.21, -1.42, 0.0), roughness=0.3)
+    return [shell, crown, brim, handle, jaw]
+
+
+def acc_biologist():
+    """Cilindro de amostras verde nas costas + puca (vara e aro) na mao esquerda."""
+    tank = cylinder("Bio_Tank", SAMPLE_GREEN, radius=0.06, depth=0.26, at=(ACC_X, -1.77, 0.24), emission=0.6)
+    cap_top = cylinder("Bio_TankCap", TOOL_GREY, radius=0.065, depth=0.03, at=(ACC_X, -1.77, 0.50))
+    cap_bot = cylinder("Bio_TankBase", TOOL_GREY, radius=0.065, depth=0.03, at=(ACC_X, -1.77, 0.22))
+    pole = cylinder("Bio_NetPole", BOARD_BROWN, radius=0.012, depth=0.55, at=(1.74, -1.42, 0.06), verts=8)
+    ring = torus("Bio_NetRing", TOOL_GREY, major=0.075, minor=0.012, at=(1.74, -1.42, 0.68),
+                 rot=(math.radians(90.0), 0.0, 0.0))
+    return [tank, cap_top, cap_bot, pole, ring]
+
+
+def acc_scientist():
+    """Jaleco branco sobre o corpo + oculos de protecao no rosto."""
+    coat = box("Sci_Coat", COAT_WHITE, size=(0.29, 0.31, 0.37), at=(ACC_X, -1.515, 0.12), roughness=0.8)
+    collar = box("Sci_Collar", COAT_WHITE, size=(0.22, 0.05, 0.05), at=(ACC_X, FACE_Y - 0.005, 0.47), roughness=0.8)
+    frame = box("Sci_Goggles", (0.12, 0.13, 0.16), size=(0.27, 0.03, 0.06), at=(ACC_X, FACE_Y + 0.01, 0.63))
+    lens_l = box("Sci_LensL", LENS, size=(0.08, 0.02, 0.045), at=(ACC_X - 0.06, FACE_Y + 0.025, 0.637), emission=0.8)
+    lens_r = box("Sci_LensR", LENS, size=(0.08, 0.02, 0.045), at=(ACC_X + 0.06, FACE_Y + 0.025, 0.637), emission=0.8)
+    return [coat, collar, frame, lens_l, lens_r]
+
+
+def acc_architect():
+    """Prancheta com planta azul na frente do peito + lapis atras da orelha."""
+    tilt = (math.radians(-20.0), 0.0, 0.0)
+    board = box("Arc_Board", BOARD_BROWN, size=(0.17, 0.02, 0.21), at=(ACC_X + 0.04, FACE_Y + 0.05, 0.20), rot=tilt)
+    sheet = box("Arc_Plan", PLAN_BLUE, size=(0.14, 0.012, 0.16), at=(ACC_X + 0.04, FACE_Y + 0.066, 0.215), rot=tilt,
+                emission=0.3)
+    clip = box("Arc_Clip", TOOL_GREY, size=(0.06, 0.03, 0.025), at=(ACC_X + 0.04, FACE_Y + 0.02, 0.40), rot=tilt)
+    pencil = cylinder("Arc_Pencil", HAT_YELLOW, radius=0.012, depth=0.16, at=(2.2, ACC_Y, 0.56), verts=6,
+                      rot=(math.radians(90.0), 0.0, 0.0))
+    return [board, sheet, clip, pencil]
+
+
 GENERATORS = {
     "seabed_a": lambda: seabed(1, pebbles=3, shells=0),
     "seabed_b": lambda: seabed(2, pebbles=6, shells=1),
@@ -305,6 +367,10 @@ GENERATORS = {
     "monument_2": monument_stage2,
     "monument_3": monument_stage3,
     "monument_4": monument_stage4,
+    "acc_engineer": acc_engineer,
+    "acc_biologist": acc_biologist,
+    "acc_scientist": acc_scientist,
+    "acc_architect": acc_architect,
 }
 
 
