@@ -21,8 +21,18 @@ namespace Drowned.World
         /// </summary>
         public const int SortingBase = 1000;
 
-        /// <summary>Ordem de desenho em isométrico: quem está mais à frente (x + y menor) desenha por cima.</summary>
-        public static int SortingOrderFor(int x, int y) => SortingBase - (x + y);
+        /// <summary>
+        /// Ordem de desenho em isométrico: quem está mais à frente (x + y menor) desenha por cima. Passo de 2 por
+        /// fileira para sobrar o ímpar do meio para os habitantes (<see cref="WalkerSortingOrderFor"/>), sem empate
+        /// com estrutura (SCRUM-199). Estruturas maiores usam a célula âncora, que é a da frente.
+        /// </summary>
+        public static int SortingOrderFor(int x, int y) => SortingBase - 2 * (x + y);
+
+        /// <summary>
+        /// Ordem do habitante na célula (x, y): na frente de estruturas cuja âncora está na mesma fileira ou atrás,
+        /// atrás das que estão mais à frente.
+        /// </summary>
+        public static int WalkerSortingOrderFor(int x, int y) => SortingOrderFor(x, y) + 1;
 
         [Tooltip("Pai dos sprites das estruturas. Se vazio, usa este transform.")]
         [SerializeField] private Transform _structuresParent;
