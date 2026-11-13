@@ -154,6 +154,7 @@ namespace Drowned.World
             go.transform.localScale = new Vector3(Scale, Scale, 1f);
             var r = go.AddComponent<SpriteRenderer>();
             r.sprite = _facing[InhabitantMath.FacingDownLeft];
+            BlobShadow.Attach(go.transform, 0.3f, 0.4f);
             var tint = _suitTints.Length > 0 ? _suitTints[index % _suitTints.Length] : Color.white;
             r.color = tint;
             var walker = new Walker

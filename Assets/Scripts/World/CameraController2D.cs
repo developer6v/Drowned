@@ -33,8 +33,8 @@ namespace Drowned.World
         [SerializeField, Range(0f, 1f)] private float _smoothing = 0.15f;
 
         [Header("Zoom")]
-        [SerializeField, Min(0.5f)] private float _minOrthoSize = 3f;
-        [SerializeField, Min(1f)] private float _maxOrthoSize = 20f;
+        [SerializeField, Min(0.5f)] private float _minOrthoSize = 2f;
+        [SerializeField, Min(1f)] private float _maxOrthoSize = 10f;
         [SerializeField, Min(0.01f)] private float _zoomStep = 1.2f;
         [SerializeField] private float _startOrthoSize = 8f;
 

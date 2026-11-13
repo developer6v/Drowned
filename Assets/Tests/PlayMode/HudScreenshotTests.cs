@@ -118,6 +118,7 @@ namespace Drowned.Tests
             var previous = cam.targetTexture;
             cam.targetTexture = rt;
             cam.aspect = (float)Width / Height; // em batch a tela virtual não é 16:9
+            foreach (var v in Object.FindObjectsByType<Drowned.World.ScreenVignette>(FindObjectsSortMode.None)) v.Follow();
             Canvas.ForceUpdateCanvases();
             cam.Render();
 

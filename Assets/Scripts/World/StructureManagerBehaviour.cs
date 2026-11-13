@@ -92,6 +92,8 @@ namespace Drowned.World
             renderer.sortingOrder = SortingOrderFor(instance.X, instance.Y);
             renderer.sprite = instance.CurrentLevel.Sprite;
             _views[instance.Id] = renderer;
+            // Sombra de contato do tamanho da pegada
+            BlobShadow.Attach(go.transform, Mathf.Max(instance.Data.FootprintWidth, instance.Data.FootprintHeight) * 0.95f);
             // Estruturas iniciais (colocadas no começo da partida) aparecem prontas; as construídas depois "montam"
             go.AddComponent<StructureAnimator>().Init(instance.Data.Category, instance.Id, playBuild: Time.timeSinceLevelLoad > 0.5f);
 
